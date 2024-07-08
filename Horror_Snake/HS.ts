@@ -1,7 +1,17 @@
 const canvas: HTMLCanvasElement = document.getElementsByTagName("canvas")[0];
 const ctx: CanvasRenderingContext2D = canvas.getContext("2d")!;
 
-function drawGrid(width: number, height: number, rows: number, cols: number) {
+interface cellData {
+    class: string;
+    positionX: number;
+    positionY: number;
+    height: number;
+    width: number;
+}
+
+let grid: cellData[] = [];
+
+function generateGrid(width: number, height: number, rows: number, cols: number) {
     const cellWidth = 25;
     const cellHeight = 25;
 
@@ -26,28 +36,24 @@ function drawGrid(width: number, height: number, rows: number, cols: number) {
                 height: cellHeight,
                 width: cellWidth,
             };
-
-            let rect: Path2D = new Path2D()
-            rect.rect(cell.positionX, cell.positionY, cellHeight, cellWidth);
-            
-            ctx.fill(rect)
-            ctx.stroke(rect)
             grid.push(cell);
         }
     }
-
 }
 
-interface cellData {
-    class: string;
-    positionX: number;
-    positionY: number;
-    height: number;
-    width: number;
+function drawGrid() {
+    for (let i = 0; i < grid.length; i++) {
+        let cell = grid[i];
+
+        let rect: Path2D = new Path2D()
+        rect.rect(cell.positionX, cell.positionY, cell.width, cell.height);
+
+        ctx.fill(rect)
+        ctx.stroke(rect)
+    }
 }
 
-let grid: cellData[] = [];
 
-
-drawGrid(canvas.width, canvas.height, 18, 32);
+generateGrid(canvas.width, canvas.height, 18, 32);
+drawGrid();
 console.log(grid);

@@ -1,6 +1,7 @@
 var canvas = document.getElementsByTagName("canvas")[0];
 var ctx = canvas.getContext("2d");
-function drawGrid(width, height, rows, cols) {
+var grid = [];
+function generateGrid(width, height, rows, cols) {
     var cellWidth = 25;
     var cellHeight = 25;
     ctx.strokeStyle = 'white';
@@ -17,14 +18,19 @@ function drawGrid(width, height, rows, cols) {
                 height: cellHeight,
                 width: cellWidth,
             };
-            var rect = new Path2D();
-            rect.rect(cell.positionX, cell.positionY, cellHeight, cellWidth);
-            ctx.fill(rect);
-            ctx.stroke(rect);
             grid.push(cell);
         }
     }
 }
-var grid = [];
-drawGrid(canvas.width, canvas.height, 18, 32);
+function drawGrid() {
+    for (var i = 0; i < grid.length; i++) {
+        var cell = grid[i];
+        var rect = new Path2D();
+        rect.rect(cell.positionX, cell.positionY, cell.width, cell.height);
+        ctx.fill(rect);
+        ctx.stroke(rect);
+    }
+}
+generateGrid(canvas.width, canvas.height, 18, 32);
+drawGrid();
 console.log(grid);
