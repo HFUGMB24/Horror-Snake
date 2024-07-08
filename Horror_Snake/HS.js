@@ -41,35 +41,34 @@ function drawGrid() {
         ctx.stroke(rect);
     }
 }
-var dierction = "";
 window.addEventListener("keypress", function (_event) {
     switch (_event.key) {
         case "w":
-            if (dierction == "down") {
+            if (snake[0].direction == "down") {
             }
             else {
-                dierction = "up";
+                snake[0].direction = "up";
             }
             break;
         case "a":
-            if (dierction == "right") {
+            if (snake[0].direction == "right") {
             }
             else {
-                dierction = "left";
+                snake[0].direction = "left";
             }
             break;
         case "s":
-            if (dierction == "up") {
+            if (snake[0].direction == "up") {
             }
             else {
-                dierction = "down";
+                snake[0].direction = "down";
             }
             break;
         case "d":
-            if (dierction == "left") {
+            if (snake[0].direction == "left") {
             }
             else {
-                dierction = "right";
+                snake[0].direction = "right";
             }
             break;
     }
@@ -79,36 +78,50 @@ function generateSnake(length, startX, startY) {
         var posX = void 0;
         var posY = void 0;
         //scan the grid Array for the position for the snake Start
-        for (var i_1 = 0; i_1 < grid.length; i_1++) {
-            if (grid[i_1].x == startX && grid[i_1].y == startY) {
-                posX = grid[i_1].positionX;
-                posY = grid[i_1].positionY;
+        for (var j = 0; j < grid.length; j++) {
+            if (snake.length <= length && grid[j].x == startX + snake.length && grid[j].y == startY) {
+                posX = grid[j].positionX;
+                posY = grid[j].positionY;
+                var cell = {
+                    direction: "left",
+                    positionX: posX,
+                    positionY: posY,
+                    height: 25,
+                    width: 25,
+                    isTop: false,
+                    x: grid[j].x,
+                    y: grid[j].y
+                };
+                snake.push(cell);
             }
         }
-        var cell = {
-            direction: "left",
-            positionX: posX,
-            positionY: posY,
-            height: 25,
-            width: 25,
-            isTop: false
-        };
     }
     snake[0].isTop = true;
 }
 function drawSnake() {
     for (var i = 0; i < snake.length; i++) {
         var cell = snake[i];
-        ctx.fillStyle = "rgb(255, 255, 255)";
+        var posX = 0;
+        var posY = 0;
+        ctx.fillStyle = "rgb(255, 0, 0)";
         var rect = new Path2D();
-        rect.rect(cell.positionX, cell.positionY, cell.width, cell.height);
+        for (var j = 0; j < grid.length; j++) {
+            if (grid[j].x == cell.x && grid[j].y == cell.y) {
+                posX = grid[j].positionX;
+                posY = grid[j].positionY;
+            }
+        }
+        rect.rect(posX, posY, cell.width, cell.height);
         ctx.fill(rect);
     }
 }
 function moveSnake() {
-    switch (dierction) {
+    switch (snake[0].direction) {
         case "left":
+            snake[0].x--;
             break;
+    }
+    for (var i = 1; i > snake.length; i++) {
     }
 }
 var viewDistance = 100;
@@ -119,11 +132,13 @@ bg.rect(0, 0, canvas.width, canvas.height);
 ctx.fillStyle = "rgb(255, 255, 255)";
 ctx.fill(bg);
 var grid = [];
-var snake;
+var snake = [];
 generateGrid(canvas.width, canvas.height, 18, 32);
+generateSnake(5, 5, 5);
 function animate() {
     drawGrid();
-    drawVignette();
+    //drawVignette();
+    drawSnake();
     requestAnimationFrame(animate);
 }
 requestAnimationFrame(animate);
