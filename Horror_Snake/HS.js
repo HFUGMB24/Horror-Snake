@@ -1,11 +1,21 @@
 var canvas = document.getElementsByTagName("canvas")[0];
 var ctx = canvas.getContext("2d");
 function drawVignette() {
+    //draw light
+    ctx.globalCompositeOperation = "lighten";
     var gradient = ctx.createRadialGradient(snake[0].positionX + GridW / 2, snake[0].positionY + GridH / 2, 0, snake[0].positionX + GridW / 2, snake[0].positionY + GridH / 2, viewDistance);
+    gradient.addColorStop(0, "rgba(226, 216, 182, 0.8)");
+    gradient.addColorStop(1, "rgba(0, 0, 0, 1)");
+    ctx.fillStyle = gradient;
+    var vignette = new Path2D();
+    vignette.rect(0, 0, canvas.width, canvas.height);
+    ctx.fill(vignette);
+    //draw darkness
+    ctx.globalCompositeOperation = "source-over";
+    gradient = ctx.createRadialGradient(snake[0].positionX + GridW / 2, snake[0].positionY + GridH / 2, 0, snake[0].positionX + GridW / 2, snake[0].positionY + GridH / 2, viewDistance);
     gradient.addColorStop(0, "rgba(0,0,0,0)");
     gradient.addColorStop(1, "rgba(0,0,0,1)");
     ctx.fillStyle = gradient;
-    var vignette = new Path2D();
     vignette.rect(0, 0, canvas.width, canvas.height);
     ctx.fill(vignette);
 }
@@ -101,7 +111,7 @@ function drawSnake() {
         var cell = snake[i];
         var posX = 0;
         var posY = 0;
-        ctx.fillStyle = "rgb(255, 0, 0)";
+        ctx.fillStyle = "rgb(81, 50, 31)";
         ctx.strokeStyle = "rgb(0, 0, 0)";
         var rect = new Path2D();
         for (var j = 0; j < grid.length; j++) {
