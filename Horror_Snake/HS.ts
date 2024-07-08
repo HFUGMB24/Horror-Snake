@@ -13,20 +13,19 @@ function drawGrid(width: number, height: number, rows: number, cols: number) {
 
     for (let i = 0; i <= cols; i++) {
 
-        let cell: cellData = {
-            positionX: 0,
-            positionY: 0,
-            class: "",
-            height: cellHeight,
-            width: cellWidth,
-        }
-
-
-        cell.positionX = i * cellWidth;
+        let x = i * cellWidth;
 
         for (let j = 0; j <= rows; j++) {
 
-            cell.positionY = j * cellHeight;
+            let y = j * cellHeight;
+
+            let cell: cellData = {
+                positionX: x,
+                positionY: y,
+                class: "",
+                height: cellHeight,
+                width: cellWidth,
+            };
 
             let rect: Path2D = new Path2D()
             rect.rect(cell.positionX, cell.positionY, cellHeight, cellWidth);
@@ -51,3 +50,4 @@ let grid: cellData[] = [];
 
 
 drawGrid(canvas.width, canvas.height, 20, 20);
+console.log(grid);
