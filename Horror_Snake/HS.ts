@@ -50,4 +50,6 @@ interface cellData {
 let grid: cellData[] = [];
 
 
-drawGrid(canvas.width, canvas.height, 20, 20);
+drawGrid(canvas.width, canvas.height, 18, 32);
+
+console.log(grid);
