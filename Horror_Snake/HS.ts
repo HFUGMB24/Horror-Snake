@@ -7,17 +7,18 @@ interface cellData {
     positionY: number;
     height: number;
     width: number;
+    x: number;
+    y: number;
 }
 
-let viewDistance = 100;
-let playerX = 500;
-let playerY = 200;
-
-
-let bg: Path2D = new Path2D();
-bg.rect(0, 0, canvas.width, canvas.height);
-ctx.fillStyle = "rgb(255, 255, 255)";
-ctx.fill(bg);
+interface SnakeCellData {
+    direction: string;
+    positionX: number;
+    positionY: number;
+    height: number;
+    width: number;
+    isTop: boolean;
+}
 
 function drawVignette() {
     let gradient = ctx.createRadialGradient(playerX, playerY, 0, playerX, playerY, viewDistance);
@@ -31,7 +32,7 @@ function drawVignette() {
     ctx.fill(vignette);
 }
 
-let grid: cellData[] = [];
+
 
 function generateGrid(width: number, height: number, rows: number, cols: number) {
     const cellWidth = 25;
@@ -55,6 +56,8 @@ function generateGrid(width: number, height: number, rows: number, cols: number)
                 class: "",
                 height: cellHeight,
                 width: cellWidth,
+                x: i,
+                y: j
             };
             grid.push(cell);
         }
@@ -111,7 +114,76 @@ window.addEventListener("keypress", _event => {
     }
 });
 
+function generateSnake(length: number, startX:number, startY: number){
+    
+    for(let i = 0; i < length; i++){
+        let posX: number;
+        let posY: number;
+
+        //scan the grid Array for the position for the snake Start
+        for(let i = 0; i < grid.length; i++){
+            if(grid[i].x == startX && grid[i].y == startY){
+                posX = grid[i].positionX;
+                posY = grid[i].positionY;
+            }
+        }
+        
+        let cell: SnakeCellData = {
+            direction: "left",
+            positionX: posX,
+            positionY: posY,
+            height: 25,
+            width: 25,
+            isTop: false
+        }
+    }
+
+
+
+    snake[0].isTop = true;
+}
+
+function drawSnake(){
+    for(let i = 0; i < snake.length; i++){
+        let cell = snake[i];
+
+        ctx.fillStyle = "rgb(255, 255, 255)";
+
+        let rect: Path2D = new Path2D()
+        rect.rect(cell.positionX, cell.positionY, cell.width, cell.height);
+
+        ctx.fill(rect)
+    }
+}
+
+function moveSnake(){
+    switch (dierction){
+        case "left":
+
+        break;
+    }
+}
+
+let viewDistance = 100;
+let playerX = 500;
+let playerY = 200;
+
+let bg: Path2D = new Path2D();
+bg.rect(0, 0, canvas.width, canvas.height);
+ctx.fillStyle = "rgb(255, 255, 255)";
+ctx.fill(bg);
+
+let grid: cellData[] = [];
+let snake: SnakeCellData[];
+
 generateGrid(canvas.width, canvas.height, 18, 32);
-drawGrid();
-drawVignette();
+
+function animate(){
+    drawGrid();
+    drawVignette();
+    requestAnimationFrame(animate)
+}
+
+requestAnimationFrame(animate);
+
 console.log(grid);
