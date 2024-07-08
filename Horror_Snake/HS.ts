@@ -5,44 +5,40 @@ function drawGrid(width: number, height: number, rows: number, cols: number) {
     const cellWidth = 25;
     const cellHeight = 25;
 
-    ctx.strokeStyle = 'black';
+    ctx.strokeStyle = 'white';
+    ctx.fillStyle = "rgb(0, 0, 0)"
     ctx.lineWidth = 1;
 
-    
+
 
     for (let i = 0; i <= cols; i++) {
-        let cell:cellData = {
-            positionX:0,
-            positionY:0,
-            class:"",
-            height:cellHeight,
-            width:cellWidth,
+
+        let cell: cellData = {
+            positionX: 0,
+            positionY: 0,
+            class: "",
+            height: cellHeight,
+            width: cellWidth,
         }
 
         cell.positionX = i * cellWidth;
-        
-        let rect: Path2D = new Path2D()
-        rect.rect(cell.positionX, cell.positionY, cellHeight, cellWidth);
- 
+
+        for (let j = 0; j <= rows; j++) {
+
+            cell.positionY = j * cellHeight;
+
+            let rect: Path2D = new Path2D()
+            rect.rect(cell.positionX, cell.positionY, cellHeight, cellWidth);
+            
+            ctx.fill(rect)
+            ctx.stroke(rect)
+            grid.push(cell);
+        }
     }
 
-    for (let j = 0; j <= rows; j++) {
-        const y = j * cellHeight;
-        ctx.beginPath();
-        ctx.moveTo(0, y);
-        ctx.lineTo(width, y);
-        ctx.stroke();
-    }
-
-    for (let i = 0; i < 400; i++){
-        grid.push(
-            class
-        )
-    }
-    
 }
 
-interface cellData{
+interface cellData {
     class: string;
     positionX: number;
     positionY: number;
