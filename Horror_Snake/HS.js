@@ -1,12 +1,5 @@
 var canvas = document.getElementsByTagName("canvas")[0];
 var ctx = canvas.getContext("2d");
-var viewDistance = 100;
-var playerX = 500;
-var playerY = 200;
-var bg = new Path2D();
-bg.rect(0, 0, canvas.width, canvas.height);
-ctx.fillStyle = "rgb(255, 255, 255)";
-ctx.fill(bg);
 function drawVignette() {
     var gradient = ctx.createRadialGradient(playerX, playerY, 0, playerX, playerY, viewDistance);
     gradient.addColorStop(0.2, "rgba(0,0,0,0)");
@@ -16,7 +9,6 @@ function drawVignette() {
     vignette.rect(0, 0, canvas.width, canvas.height);
     ctx.fill(vignette);
 }
-var grid = [];
 function generateGrid(width, height, rows, cols) {
     var cellWidth = 25;
     var cellHeight = 25;
@@ -33,6 +25,8 @@ function generateGrid(width, height, rows, cols) {
                 class: "",
                 height: cellHeight,
                 width: cellWidth,
+                x: i,
+                y: j
             };
             grid.push(cell);
         }
@@ -80,7 +74,48 @@ window.addEventListener("keypress", function (_event) {
             break;
     }
 });
+function generateSnake(length) {
+    for (var i = 0; i < length; i++) {
+        var cell = {
+            direction: "left",
+            positionX: 0,
+            positionY: 0,
+            height: 25,
+            width: 25,
+            isTop: false
+        };
+    }
+    snake[0].isTop = true;
+}
+function drawSnake() {
+    for (var i = 0; i < snake.length; i++) {
+        var cell = snake[i];
+        ctx.fillStyle = "rgb(255, 255, 255)";
+        var rect = new Path2D();
+        rect.rect(cell.positionX, cell.positionY, cell.width, cell.height);
+        ctx.fill(rect);
+    }
+}
+function moveSnake() {
+    switch (dierction) {
+        case "left":
+            break;
+    }
+}
+var viewDistance = 100;
+var playerX = 500;
+var playerY = 200;
+var bg = new Path2D();
+bg.rect(0, 0, canvas.width, canvas.height);
+ctx.fillStyle = "rgb(255, 255, 255)";
+ctx.fill(bg);
+var grid = [];
+var snake;
 generateGrid(canvas.width, canvas.height, 18, 32);
-drawGrid();
-drawVignette();
+function animate() {
+    drawGrid();
+    drawVignette();
+    requestAnimationFrame(animate);
+}
+requestAnimationFrame(animate);
 console.log(grid);
