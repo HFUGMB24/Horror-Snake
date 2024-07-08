@@ -101,9 +101,17 @@ function generateSnake(length, startX, startY) {
 function drawSnake() {
     for (var i = 0; i < snake.length; i++) {
         var cell = snake[i];
+        var posX = 0;
+        var posY = 0;
         ctx.fillStyle = "rgb(255, 0, 0)";
         var rect = new Path2D();
-        rect.rect(cell.positionX, cell.positionY, cell.width, cell.height);
+        for (var j = 0; j < grid.length; j++) {
+            if (grid[j].x == cell.x && grid[j].y == cell.y) {
+                posX = grid[j].positionX;
+                posY = grid[j].positionY;
+            }
+        }
+        rect.rect(posX, posY, cell.width, cell.height);
         ctx.fill(rect);
     }
 }
@@ -112,6 +120,8 @@ function moveSnake() {
         case "left":
             snake[0].x--;
             break;
+    }
+    for (var i = 1; i > snake.length; i++) {
     }
 }
 var viewDistance = 100;

@@ -147,11 +147,20 @@ function generateSnake(length: number, startX:number, startY: number){
 function drawSnake(){
     for(let i = 0; i < snake.length; i++){
         let cell = snake[i];
+        let posX = 0;
+        let posY = 0;
 
         ctx.fillStyle = "rgb(255, 0, 0)";
 
         let rect: Path2D = new Path2D()
-        rect.rect(cell.positionX, cell.positionY, cell.width, cell.height);
+
+        for(let j = 0; j < grid.length; j++){
+            if(grid[j].x == cell.x && grid[j].y == cell.y){
+                posX = grid[j].positionX
+                posY = grid[j].positionY
+            }
+        }
+        rect.rect(posX, posY, cell.width, cell.height);
 
         ctx.fill(rect)
     }
@@ -161,8 +170,11 @@ function moveSnake(){
     switch (snake[0].direction){
         case "left":
             snake[0].x--;
-            
         break;
+    }
+
+    for(let i = 1; i > snake.length; i++){
+
     }
 }
 
