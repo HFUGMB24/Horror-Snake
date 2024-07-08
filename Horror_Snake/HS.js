@@ -1,8 +1,8 @@
 var canvas = document.getElementsByTagName("canvas")[0];
 var ctx = canvas.getContext("2d");
 function drawVignette() {
-    var gradient = ctx.createRadialGradient(snake[0].x, snake[0].y, 0, snake[0].x, snake[0].y, viewDistance);
-    gradient.addColorStop(0.2, "rgba(0,0,0,0)");
+    var gradient = ctx.createRadialGradient(snake[0].positionX + GridW / 2, snake[0].positionY + GridH / 2, 0, snake[0].positionX + GridW / 2, snake[0].positionY + GridH / 2, viewDistance);
+    gradient.addColorStop(0, "rgba(0,0,0,0)");
     gradient.addColorStop(1, "rgba(0,0,0,1)");
     ctx.fillStyle = gradient;
     var vignette = new Path2D();
@@ -108,8 +108,6 @@ function drawSnake() {
             if (grid[j].x == cell.x && grid[j].y == cell.y) {
                 posX = grid[j].positionX;
                 posY = grid[j].positionY;
-                //snake[i].positionX = grid[j].positionX;
-                //snake[i].positionY = grid[j].positionY;
             }
         }
         rect.rect(posX, posY, cell.width, cell.height);
@@ -118,7 +116,6 @@ function drawSnake() {
     }
 }
 function moveSnake() {
-    //let lastPos = snake;
     for (var i = 1; i < snake.length; i++) {
         snake[i].x = snake[i - 1].x;
         snake[i].y = snake[i - 1].y;
@@ -137,22 +134,28 @@ function moveSnake() {
             snake[0].y--;
             break;
     }
+    for (var i = 0; i < snake.length; i++) {
+        for (var j = 0; j < grid.length; j++) {
+            if (grid[j].x == snake[i].x && grid[j].y == snake[i].y) {
+                snake[i].positionX = grid[j].positionX;
+                snake[i].positionY = grid[j].positionY;
+            }
+        }
+    }
 }
-var viewDistance = 100;
-var playerX = 500;
-var playerY = 200;
+var viewDistance = 300;
 var bg = new Path2D();
 bg.rect(0, 0, canvas.width, canvas.height);
 ctx.fillStyle = "rgb(255, 255, 255)";
 ctx.fill(bg);
 var grid = [];
 var snake = [];
-var GridY = 20;
-var GridX = 20;
-var GridW = 50;
-var GridH = 50;
+var GridY = 40;
+var GridX = 40;
+var GridW = 25;
+var GridH = 25;
 generateGrid(canvas.width, canvas.height, GridX, GridY);
-generateSnake(5, 5, 5);
+generateSnake(2, 5, 5);
 var delay = 0;
 function animate() {
     delay++;
@@ -160,7 +163,7 @@ function animate() {
         moveSnake();
         drawGrid();
         drawSnake();
-        //drawVignette();
+        drawVignette();
         delay = 0;
     }
     requestAnimationFrame(animate);

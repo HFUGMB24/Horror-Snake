@@ -23,8 +23,8 @@ interface SnakeCellData {
 }
 
 function drawVignette() {
-    let gradient = ctx.createRadialGradient(snake[0].x, snake[0].y, 0, snake[0].x, snake[0].y, viewDistance);
-    gradient.addColorStop(0.2, "rgba(0,0,0,0)");
+    let gradient = ctx.createRadialGradient(snake[0].positionX + GridW / 2, snake[0].positionY + GridH / 2, 0, snake[0].positionX + GridW / 2, snake[0].positionY + GridH / 2, viewDistance);
+    gradient.addColorStop(0, "rgba(0,0,0,0)");
     gradient.addColorStop(1, "rgba(0,0,0,1)");
 
     ctx.fillStyle = gradient;
@@ -158,9 +158,6 @@ function drawSnake() {
             if (grid[j].x == cell.x && grid[j].y == cell.y) {
                 posX = grid[j].positionX;
                 posY = grid[j].positionY;
-
-                //snake[i].positionX = grid[j].positionX;
-                //snake[i].positionY = grid[j].positionY;
             }
         }
         rect.rect(posX, posY, cell.width, cell.height);
@@ -171,13 +168,12 @@ function drawSnake() {
 }
 
 function moveSnake() {
-    //let lastPos = snake;
-    
+
     for (let i = 1; i < snake.length; i++) {
         snake[i].x = snake[i - 1].x;
         snake[i].y = snake[i - 1].y;
     }
-    
+
     switch (snake[0].direction) {
         case "left":
             snake[0].x--;
@@ -192,11 +188,19 @@ function moveSnake() {
             snake[0].y--;
             break;
     }
+
+    for (let i = 0; i < snake.length; i++) {
+
+        for (let j = 0; j < grid.length; j++) {
+            if (grid[j].x == snake[i].x && grid[j].y == snake[i].y) {
+                snake[i].positionX = grid[j].positionX;
+                snake[i].positionY = grid[j].positionY;
+            }
+        }
+    }
 }
 
-let viewDistance = 100;
-let playerX = 500;
-let playerY = 200;
+let viewDistance = 300;
 
 let bg: Path2D = new Path2D();
 bg.rect(0, 0, canvas.width, canvas.height);
@@ -206,14 +210,14 @@ ctx.fill(bg);
 let grid: cellData[] = [];
 let snake: SnakeCellData[] = [];
 
-let GridY: number = 20;
-let GridX: number = 20;
+let GridY: number = 40;
+let GridX: number = 40;
 
-let GridW: number = 50;
-let GridH: number = 50;
+let GridW: number = 25;
+let GridH: number = 25;
 
 generateGrid(canvas.width, canvas.height, GridX, GridY);
-generateSnake(5, 5, 5);
+generateSnake(2, 5, 5);
 
 let delay: number = 0;
 
@@ -223,7 +227,7 @@ function animate() {
         moveSnake();
         drawGrid();
         drawSnake();
-        //drawVignette();
+        drawVignette();
         delay = 0;
     }
 
