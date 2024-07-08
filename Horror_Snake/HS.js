@@ -12,9 +12,6 @@ function drawVignette() {
 function generateGrid(width, height, rows, cols) {
     var cellWidth = 25;
     var cellHeight = 25;
-    ctx.strokeStyle = 'white';
-    ctx.fillStyle = "rgb(0, 0, 0)";
-    ctx.lineWidth = 1;
     for (var i = 0; i <= cols; i++) {
         var x = i * cellWidth;
         for (var j = 0; j <= rows; j++) {
@@ -33,6 +30,9 @@ function generateGrid(width, height, rows, cols) {
     }
 }
 function drawGrid() {
+    ctx.strokeStyle = 'rgb(255, 255, 255)';
+    ctx.fillStyle = "rgb(0, 0, 0)";
+    ctx.lineWidth = 1;
     for (var i = 0; i < grid.length; i++) {
         var cell = grid[i];
         var rect = new Path2D();
@@ -116,12 +116,24 @@ function drawSnake() {
     }
 }
 function moveSnake() {
+    //let lastPos = snake;
     switch (snake[0].direction) {
         case "left":
             snake[0].x--;
             break;
+        case "right":
+            snake[0].x++;
+            break;
+        case "down":
+            snake[0].y++;
+            break;
+        case "up":
+            snake[0].y--;
+            break;
     }
     for (var i = 1; i > snake.length; i++) {
+        snake[i].x = snake[i - 1].x;
+        snake[i].y = snake[i - 1].y;
     }
 }
 var viewDistance = 100;
@@ -135,10 +147,16 @@ var grid = [];
 var snake = [];
 generateGrid(canvas.width, canvas.height, 18, 32);
 generateSnake(5, 5, 5);
+var delay = 0;
 function animate() {
-    drawGrid();
-    //drawVignette();
-    drawSnake();
+    delay++;
+    if (delay == 30) {
+        moveSnake();
+        drawGrid();
+        //drawVignette();
+        drawSnake();
+        delay = 0;
+    }
     requestAnimationFrame(animate);
 }
 requestAnimationFrame(animate);

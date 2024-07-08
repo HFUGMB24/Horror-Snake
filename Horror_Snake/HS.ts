@@ -40,10 +40,6 @@ function generateGrid(width: number, height: number, rows: number, cols: number)
     const cellWidth = 25;
     const cellHeight = 25;
 
-    ctx.strokeStyle = 'white';
-    ctx.fillStyle = "rgb(0, 0, 0)"
-    ctx.lineWidth = 1;
-
     for (let i = 0; i <= cols; i++) {
 
         let x = i * cellWidth;
@@ -67,6 +63,11 @@ function generateGrid(width: number, height: number, rows: number, cols: number)
 }
 
 function drawGrid() {
+
+    ctx.strokeStyle = 'rgb(255, 255, 255)';
+    ctx.fillStyle = "rgb(0, 0, 0)"
+    ctx.lineWidth = 1;
+
     for (let i = 0; i < grid.length; i++) {
         let cell = grid[i];
 
@@ -79,50 +80,50 @@ function drawGrid() {
 }
 
 window.addEventListener("keypress", _event => {
-    switch (_event.key){
+    switch (_event.key) {
         case "w":
-            if(snake[0].direction == "down"){
+            if (snake[0].direction == "down") {
 
-            }else{
+            } else {
                 snake[0].direction = "up";
             }
-        break;
+            break;
 
         case "a":
-            if(snake[0].direction == "right"){
+            if (snake[0].direction == "right") {
 
-            }else{
+            } else {
                 snake[0].direction = "left";
             }
-        break;
+            break;
 
         case "s":
-            if(snake[0].direction == "up"){
+            if (snake[0].direction == "up") {
 
-            }else{
+            } else {
                 snake[0].direction = "down";
             }
-        break;
+            break;
 
         case "d":
-            if(snake[0].direction == "left"){
+            if (snake[0].direction == "left") {
 
-            }else{
+            } else {
                 snake[0].direction = "right";
             }
-        break;
+            break;
     }
 });
 
-function generateSnake(length: number, startX:number, startY: number){
-    
-    for(let i = 0; i < length; i++){
+function generateSnake(length: number, startX: number, startY: number) {
+
+    for (let i = 0; i < length; i++) {
         let posX: number;
         let posY: number;
 
         //scan the grid Array for the position for the snake Start
-        for(let j = 0; j < grid.length; j++){
-            if(snake.length <= length && grid[j].x == startX + snake.length && grid[j].y == startY){
+        for (let j = 0; j < grid.length; j++) {
+            if (snake.length <= length && grid[j].x == startX + snake.length && grid[j].y == startY) {
                 posX = grid[j].positionX;
                 posY = grid[j].positionY;
 
@@ -144,8 +145,8 @@ function generateSnake(length: number, startX:number, startY: number){
     snake[0].isTop = true;
 }
 
-function drawSnake(){
-    for(let i = 0; i < snake.length; i++){
+function drawSnake() {
+    for (let i = 0; i < snake.length; i++) {
         let cell = snake[i];
         let posX = 0;
         let posY = 0;
@@ -154,8 +155,8 @@ function drawSnake(){
 
         let rect: Path2D = new Path2D()
 
-        for(let j = 0; j < grid.length; j++){
-            if(grid[j].x == cell.x && grid[j].y == cell.y){
+        for (let j = 0; j < grid.length; j++) {
+            if (grid[j].x == cell.x && grid[j].y == cell.y) {
                 posX = grid[j].positionX
                 posY = grid[j].positionY
             }
@@ -166,15 +167,26 @@ function drawSnake(){
     }
 }
 
-function moveSnake(){
-    switch (snake[0].direction){
+function moveSnake() {
+    //let lastPos = snake;
+    switch (snake[0].direction) {
         case "left":
             snake[0].x--;
-        break;
+            break;
+        case "right":
+            snake[0].x++;
+            break;
+        case "down":
+            snake[0].y++;
+            break;
+        case "up":
+            snake[0].y--;
+            break;
     }
 
-    for(let i = 1; i > snake.length; i++){
-
+    for (let i = 1; i > snake.length; i++) {
+        snake[i].x = snake[i - 1].x;
+        snake[i].y = snake[i - 1].y;
     }
 }
 
@@ -193,11 +205,20 @@ let snake: SnakeCellData[] = [];
 generateGrid(canvas.width, canvas.height, 18, 32);
 generateSnake(5, 5, 5);
 
-function animate(){
-    drawGrid();
-    //drawVignette();
-    drawSnake();
-    requestAnimationFrame(animate)
+let delay: number = 0;
+
+function animate() {
+    delay++;
+    if (delay == 30) {
+        moveSnake();
+        drawGrid();
+        //drawVignette();
+        drawSnake();
+        delay = 0;
+    }
+
+    requestAnimationFrame(animate);
+
 }
 
 requestAnimationFrame(animate);
