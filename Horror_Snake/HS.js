@@ -131,7 +131,7 @@ function moveSnake() {
             snake[0].y--;
             break;
     }
-    for (var i = 1; i > snake.length; i++) {
+    for (var i = 1; i < snake.length; i++) {
         snake[i].x = snake[i - 1].x;
         snake[i].y = snake[i - 1].y;
     }

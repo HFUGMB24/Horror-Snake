@@ -184,7 +184,7 @@ function moveSnake() {
             break;
     }
 
-    for (let i = 1; i > snake.length; i++) {
+    for (let i = 1; i < snake.length; i++) {
         snake[i].x = snake[i - 1].x;
         snake[i].y = snake[i - 1].y;
     }
