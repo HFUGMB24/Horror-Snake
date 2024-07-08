@@ -21,7 +21,6 @@ function drawGrid(width: number, height: number, rows: number, cols: number) {
             width: cellWidth,
         }
 
-        ctx.fillStyle = "red";
 
         cell.positionX = i * cellWidth;
 

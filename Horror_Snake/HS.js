@@ -1,24 +1,24 @@
-var canvas = document.getElementsByTagName("canvas")[0];
-var ctx = canvas.getContext("2d");
+"use strict";
+const canvas = document.getElementsByTagName("canvas")[0];
+const ctx = canvas.getContext("2d");
 function drawGrid(width, height, rows, cols) {
-    var cellWidth = 25;
-    var cellHeight = 25;
+    const cellWidth = 25;
+    const cellHeight = 25;
     ctx.strokeStyle = 'white';
     ctx.fillStyle = "rgb(0, 0, 0)";
     ctx.lineWidth = 1;
-    for (var i = 0; i <= cols; i++) {
-        var cell = {
+    for (let i = 0; i <= cols; i++) {
+        let cell = {
             positionX: 0,
             positionY: 0,
             class: "",
             height: cellHeight,
             width: cellWidth,
         };
-        ctx.fillStyle = "red";
         cell.positionX = i * cellWidth;
-        for (var j = 0; j <= rows; j++) {
+        for (let j = 0; j <= rows; j++) {
             cell.positionY = j * cellHeight;
-            var rect = new Path2D();
+            let rect = new Path2D();
             rect.rect(cell.positionX, cell.positionY, cellHeight, cellWidth);
             ctx.fill(rect);
             ctx.stroke(rect);
@@ -26,5 +26,5 @@ function drawGrid(width, height, rows, cols) {
         }
     }
 }
-var grid = [];
+let grid = [];
 drawGrid(canvas.width, canvas.height, 20, 20);
