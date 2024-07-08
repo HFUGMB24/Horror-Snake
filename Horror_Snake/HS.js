@@ -1,7 +1,7 @@
 var canvas = document.getElementsByTagName("canvas")[0];
 var ctx = canvas.getContext("2d");
 function drawVignette() {
-    var gradient = ctx.createRadialGradient(playerX, playerY, 0, playerX, playerY, viewDistance);
+    var gradient = ctx.createRadialGradient(snake[0].x, snake[0].y, 0, snake[0].x, snake[0].y, viewDistance);
     gradient.addColorStop(0.2, "rgba(0,0,0,0)");
     gradient.addColorStop(1, "rgba(0,0,0,1)");
     ctx.fillStyle = gradient;
@@ -10,18 +10,16 @@ function drawVignette() {
     ctx.fill(vignette);
 }
 function generateGrid(width, height, rows, cols) {
-    var cellWidth = 25;
-    var cellHeight = 25;
     for (var i = 0; i <= cols; i++) {
-        var x = i * cellWidth;
+        var x = i * GridW;
         for (var j = 0; j <= rows; j++) {
-            var y = j * cellHeight;
+            var y = j * GridH;
             var cell = {
                 positionX: x,
                 positionY: y,
                 class: "",
-                height: cellHeight,
-                width: cellWidth,
+                height: GridH,
+                width: GridW,
                 x: i,
                 y: j
             };
@@ -86,8 +84,8 @@ function generateSnake(length, startX, startY) {
                     direction: "left",
                     positionX: posX,
                     positionY: posY,
-                    height: 25,
-                    width: 25,
+                    height: GridH,
+                    width: GridW,
                     isTop: false,
                     x: grid[j].x,
                     y: grid[j].y
@@ -104,15 +102,19 @@ function drawSnake() {
         var posX = 0;
         var posY = 0;
         ctx.fillStyle = "rgb(255, 0, 0)";
+        ctx.strokeStyle = "rgb(0, 0, 0)";
         var rect = new Path2D();
         for (var j = 0; j < grid.length; j++) {
             if (grid[j].x == cell.x && grid[j].y == cell.y) {
                 posX = grid[j].positionX;
                 posY = grid[j].positionY;
+                //snake[i].positionX = grid[j].positionX;
+                //snake[i].positionY = grid[j].positionY;
             }
         }
         rect.rect(posX, posY, cell.width, cell.height);
         ctx.fill(rect);
+        ctx.stroke(rect);
     }
 }
 function moveSnake() {
@@ -145,7 +147,11 @@ ctx.fillStyle = "rgb(255, 255, 255)";
 ctx.fill(bg);
 var grid = [];
 var snake = [];
-generateGrid(canvas.width, canvas.height, 18, 32);
+var GridY = 20;
+var GridX = 20;
+var GridW = 50;
+var GridH = 50;
+generateGrid(canvas.width, canvas.height, GridX, GridY);
 generateSnake(5, 5, 5);
 var delay = 0;
 function animate() {
@@ -153,8 +159,8 @@ function animate() {
     if (delay == 30) {
         moveSnake();
         drawGrid();
-        //drawVignette();
         drawSnake();
+        //drawVignette();
         delay = 0;
     }
     requestAnimationFrame(animate);
