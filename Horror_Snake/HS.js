@@ -47,6 +47,39 @@ function drawGrid() {
         ctx.stroke(rect);
     }
 }
+var dierction = "";
+window.addEventListener("keypress", function (_event) {
+    switch (_event.key) {
+        case "w":
+            if (dierction == "down") {
+            }
+            else {
+                dierction = "up";
+            }
+            break;
+        case "a":
+            if (dierction == "right") {
+            }
+            else {
+                dierction = "left";
+            }
+            break;
+        case "s":
+            if (dierction == "up") {
+            }
+            else {
+                dierction = "down";
+            }
+            break;
+        case "d":
+            if (dierction == "left") {
+            }
+            else {
+                dierction = "right";
+            }
+            break;
+    }
+});
 generateGrid(canvas.width, canvas.height, 18, 32);
 drawGrid();
 drawVignette();
