@@ -27,4 +27,5 @@ function drawGrid(width, height, rows, cols) {
     }
 }
 let grid = [];
-drawGrid(canvas.width, canvas.height, 20, 20);
+drawGrid(canvas.width, canvas.height, 18, 32);
+console.log(grid);
