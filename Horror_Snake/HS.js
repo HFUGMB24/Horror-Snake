@@ -1,9 +1,10 @@
-var canvas = document.getElementsByTagName("canvas")[0];
-var ctx = canvas.getContext("2d");
-var grid = [];
+"use strict";
+const canvas = document.getElementsByTagName("canvas")[0];
+const ctx = canvas.getContext("2d");
+let grid = [];
 function generateGrid(width, height, rows, cols) {
-    var cellWidth = 25;
-    var cellHeight = 25;
+    const cellWidth = 25;
+    const cellHeight = 25;
     ctx.strokeStyle = 'white';
     ctx.fillStyle = "rgb(0, 0, 0)";
     ctx.lineWidth = 1;
@@ -23,9 +24,9 @@ function generateGrid(width, height, rows, cols) {
     }
 }
 function drawGrid() {
-    for (var i = 0; i < grid.length; i++) {
-        var cell = grid[i];
-        var rect = new Path2D();
+    for (let i = 0; i < grid.length; i++) {
+        let cell = grid[i];
+        let rect = new Path2D();
         rect.rect(cell.positionX, cell.positionY, cell.width, cell.height);
         ctx.fill(rect);
         ctx.stroke(rect);
