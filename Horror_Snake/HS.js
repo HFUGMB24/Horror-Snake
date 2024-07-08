@@ -117,6 +117,10 @@ function drawSnake() {
 }
 function moveSnake() {
     //let lastPos = snake;
+    for (var i = 1; i < snake.length; i++) {
+        snake[i].x = snake[i - 1].x;
+        snake[i].y = snake[i - 1].y;
+    }
     switch (snake[0].direction) {
         case "left":
             snake[0].x--;
@@ -130,10 +134,6 @@ function moveSnake() {
         case "up":
             snake[0].y--;
             break;
-    }
-    for (var i = 1; i < snake.length; i++) {
-        snake[i].x = snake[i - 1].x;
-        snake[i].y = snake[i - 1].y;
     }
 }
 var viewDistance = 100;
