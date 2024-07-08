@@ -74,12 +74,21 @@ window.addEventListener("keypress", function (_event) {
             break;
     }
 });
-function generateSnake(length) {
+function generateSnake(length, startX, startY) {
     for (var i = 0; i < length; i++) {
+        var posX = void 0;
+        var posY = void 0;
+        //scan the grid Array for the position for the snake Start
+        for (var i_1 = 0; i_1 < grid.length; i_1++) {
+            if (grid[i_1].x == startX && grid[i_1].y == startY) {
+                posX = grid[i_1].positionX;
+                posY = grid[i_1].positionY;
+            }
+        }
         var cell = {
             direction: "left",
-            positionX: 0,
-            positionY: 0,
+            positionX: posX,
+            positionY: posY,
             height: 25,
             width: 25,
             isTop: false

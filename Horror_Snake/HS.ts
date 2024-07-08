@@ -114,19 +114,31 @@ window.addEventListener("keypress", _event => {
     }
 });
 
-function generateSnake(length: number){
+function generateSnake(length: number, startX:number, startY: number){
     
     for(let i = 0; i < length; i++){
+        let posX: number;
+        let posY: number;
+
+        //scan the grid Array for the position for the snake Start
+        for(let i = 0; i < grid.length; i++){
+            if(grid[i].x == startX && grid[i].y == startY){
+                posX = grid[i].positionX;
+                posY = grid[i].positionY;
+            }
+        }
+        
         let cell: SnakeCellData = {
             direction: "left",
-            positionX: 0,
-            positionY: 0,
+            positionX: posX,
+            positionY: posY,
             height: 25,
             width: 25,
             isTop: false
         }
-
     }
+
+
 
     snake[0].isTop = true;
 }
