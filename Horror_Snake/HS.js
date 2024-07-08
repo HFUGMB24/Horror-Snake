@@ -7,11 +7,11 @@ function generateGrid(width, height, rows, cols) {
     ctx.strokeStyle = 'white';
     ctx.fillStyle = "rgb(0, 0, 0)";
     ctx.lineWidth = 1;
-    for (var i = 0; i <= cols; i++) {
-        var x = i * cellWidth;
-        for (var j = 0; j <= rows; j++) {
-            var y = j * cellHeight;
-            var cell = {
+    for (let i = 0; i <= cols; i++) {
+        let x = i * cellWidth;
+        for (let j = 0; j <= rows; j++) {
+            let y = j * cellHeight;
+            let cell = {
                 positionX: x,
                 positionY: y,
                 class: "",
