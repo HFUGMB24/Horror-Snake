@@ -366,6 +366,17 @@ function drawBlindFood() {
         ctx.stroke(rect);
     }
 }
+function loadJumpscareImages() {
+    for (var i = 1; i <= 3; i++) {
+        var image = new Image();
+        image.src = "/textures/jumpscares/jumpscare" + i + ".png";
+        images.push(image);
+    }
+}
+function jumpscare() {
+    var randomIndex = Math.floor(Math.random() * images.length);
+    ctx.drawImage(images[randomIndex], 0, 0, canvas.width, canvas.height);
+}
 // function checkSelfCollision(): boolean {
 //     for (let i = 1; i < snake.length; i++) {
 //         if (snake[0].x === snake[i].x && snake[0].y === snake[i].y) {
@@ -386,6 +397,7 @@ var Food = [];
 var BlindFood = [];
 var Walls = [];
 var Thief = [];
+var images = [];
 var GridY = 40;
 var GridX = 40;
 var CellW = 27;
@@ -398,6 +410,7 @@ generateBlindFood();
 generateSnake(2, 5, 5);
 generateWalls(25);
 generateThief();
+loadJumpscareImages();
 var delay = 0;
 function animate() {
     delay++;
@@ -424,6 +437,7 @@ function animate() {
                 BlindFood.pop();
                 addBlindFood();
                 feedSnake();
+                jumpscare();
                 viewDistance = 300;
             }
             ctx.putImageData(imgData, 0, 0);
