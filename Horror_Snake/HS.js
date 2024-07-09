@@ -267,6 +267,68 @@ function drawWalls() {
         ctx.stroke(rect);
     }
 }
+function generateThief() {
+    var randIndex = Math.floor(Math.random() * grid.length);
+    var length = Math.floor(Math.random() * 5 + 1);
+    var direction = [Math.round(-1 + Math.random() * 2), Math.round(-1 + Math.random() * 2)];
+    for (var i = 0; i < length; i++) {
+        var cell = {
+            positionX: grid[randIndex].positionX + (direction[0] * i) * CellW,
+            positionY: grid[randIndex].positionY + (direction[1] * i) * CellH,
+            direction: direction,
+            height: CellH,
+            width: CellW,
+            x: grid[randIndex].x + direction[0] * i,
+            y: grid[randIndex].y + direction[1] * i
+        };
+        Thief.push(cell);
+    }
+}
+function moveThief() {
+    // Move body
+    for (var i = Thief.length - 1; i > 0; i--) {
+        Thief[i].x = Thief[i - 1].x;
+        Thief[i].y = Thief[i - 1].y;
+        Thief[i].direction = Thief[i - 1].direction;
+    }
+    // Move head
+    var _a = Thief[0].direction, dx = _a[0], dy = _a[1];
+    Thief[0].x += dx;
+    Thief[0].y += dy;
+    // Update positions
+    for (var i = 0; i < Thief.length; i++) {
+        for (var j = 0; j < grid.length; j++) {
+            if (grid[j].x == Thief[i].x && grid[j].y == Thief[i].y) {
+                Thief[i].positionX = grid[j].positionX;
+                Thief[i].positionY = grid[j].positionY;
+            }
+        }
+    }
+    // Optionally, change direction randomly
+    if (Math.random() < 0.1) { // 10% chance to change direction each move
+        Thief[0].direction = [Math.round(-1 + Math.random() * 2), Math.round(-1 + Math.random() * 2)];
+    }
+}
+function drawThief() {
+    for (var i = 0; i < Thief.length; i++) {
+        var cell = Thief[i];
+        var posX = 0;
+        var posY = 0;
+        ctx.fillStyle = "rgb(81, 50, 31)";
+        ctx.strokeStyle = "rgb(0, 0, 0)";
+        ctx.lineWidth = 1;
+        var rect = new Path2D();
+        for (var j = 0; j < grid.length; j++) {
+            if (grid[j].x == cell.x && grid[j].y == cell.y) {
+                posX = grid[j].positionX;
+                posY = grid[j].positionY;
+            }
+        }
+        rect.rect(posX, posY, cell.width, cell.height);
+        ctx.fill(rect);
+        ctx.stroke(rect);
+    }
+}
 // function checkSelfCollision(): boolean {
 //     for (let i = 1; i < snake.length; i++) {
 //         if (snake[0].x === snake[i].x && snake[0].y === snake[i].y) {
@@ -285,6 +347,7 @@ var snake = [];
 var Bounds = [];
 var Food = [];
 var Walls = [];
+var Thief = [];
 var GridY = 40;
 var GridX = 40;
 var CellW = 25;
@@ -295,6 +358,7 @@ generateBounds();
 generateFood();
 generateSnake(2, 5, 5);
 generateWalls(25);
+generateThief();
 var delay = 0;
 function animate() {
     delay++;
@@ -309,6 +373,7 @@ function animate() {
         else {
             delay = 0;
             moveSnake();
+            moveThief();
             // Check if snake's head collides with food
             if (snake[0].x === Food[0].x && snake[0].y === Food[0].y) {
                 Food.pop();
@@ -319,9 +384,10 @@ function animate() {
             ctx.putImageData(imgData, 0, 0);
             // drawGrid();
             // drawBounds();
+            drawThief();
             drawFood();
             drawSnake();
-            drawVignette();
+            //drawVignette();
         }
     }
     requestAnimationFrame(animate);
