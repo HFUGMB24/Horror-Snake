@@ -97,7 +97,7 @@ function generateSnake(length, startX, startY) {
                     height: CellH,
                     width: CellW,
                     isTop: false,
-                    x: grid[j].x,
+                    x: grid[j].x - i,
                     y: grid[j].y
                 };
                 snake.push(cell);
@@ -237,6 +237,44 @@ function drawFood() {
         ctx.stroke(rect);
     }
 }
+function generateWalls(amount) {
+    for (var j = 0; j < amount; j++) {
+        var randIndex = Math.floor(Math.random() * grid.length);
+        var length_1 = Math.floor(Math.random() * 5 + 1);
+        var direction = [Math.round(Math.random()), Math.round(Math.random())];
+        for (var i = 0; i < length_1; i++) {
+            var wall = {
+                positionX: grid[randIndex].positionX + (direction[0] * i) * CellW,
+                positionY: grid[randIndex].positionY + (direction[1] * i) * CellH,
+                class: "",
+                height: CellH,
+                width: CellW,
+                x: grid[randIndex].x + direction[0] * i,
+                y: grid[randIndex].y + direction[1] * i
+            };
+            Walls.push(wall);
+        }
+    }
+}
+function drawWalls() {
+    ctx.fillStyle = "rgb(140, 99, 99)";
+    ctx.strokeStyle = "rgb(84, 84, 84)";
+    ctx.lineWidth = 3;
+    var rect = new Path2D();
+    for (var i = 0; i < Walls.length; i++) {
+        rect.rect(Walls[i].positionX, Walls[i].positionY, Walls[i].width, Walls[i].height);
+        ctx.fill(rect);
+        ctx.stroke(rect);
+    }
+}
+// function checkSelfCollision(): boolean {
+//     for (let i = 1; i < snake.length; i++) {
+//         if (snake[0].x === snake[i].x && snake[0].y === snake[i].y) {
+//             return true;
+//         }
+//     }
+//     return false;
+// }
 var viewDistance = 300;
 var bg = new Path2D();
 bg.rect(0, 0, canvas.width, canvas.height);
@@ -246,14 +284,17 @@ var grid = [];
 var snake = [];
 var Bounds = [];
 var Food = [];
+var Walls = [];
 var GridY = 40;
 var GridX = 40;
 var CellW = 25;
 var CellH = 25;
+//let selfCollide: boolean = false;
 generateGrid(canvas.width, canvas.height, GridX, GridY);
 generateBounds();
 generateFood();
 generateSnake(2, 5, 5);
+generateWalls(25);
 var delay = 0;
 function animate() {
     delay++;
@@ -261,7 +302,9 @@ function animate() {
         if (viewDistance > 100) {
             viewDistance -= 2;
         }
-        if (snake[0].positionX < CellW || snake[0].positionX > CellW * (GridX - 1) || snake[0].positionY < CellH || snake[0].positionY > CellH * (GridY - 1)) {
+        //selfCollide = checkSelfCollision();
+        //check for wall collision -----------------------------------
+        if ( /*selfCollide ||*/snake[0].positionX < CellW || snake[0].positionX > CellW * (GridX - 1) || snake[0].positionY < CellH || snake[0].positionY > CellH * (GridY - 1)) {
         }
         else {
             delay = 0;
@@ -285,6 +328,7 @@ function animate() {
 }
 drawGrid();
 drawBounds();
+drawWalls();
 var imgData = ctx.getImageData(0, 0, canvas.width, canvas.height);
 requestAnimationFrame(animate);
 console.log(grid);

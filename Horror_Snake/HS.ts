@@ -147,7 +147,7 @@ function generateSnake(length: number, startX: number, startY: number) {
                     height: CellH,
                     width: CellW,
                     isTop: false,
-                    x: grid[j].x,
+                    x: grid[j].x - i,
                     y: grid[j].y
                 };
 
@@ -318,6 +318,54 @@ function drawFood() {
     }
 }
 
+function generateWalls(amount: number) {
+    for (let j = 0; j < amount; j++) {
+        let randIndex = Math.floor(Math.random() * grid.length);
+        let length = Math.floor(Math.random() * 5 + 1);
+        let direction = [Math.round(Math.random()), Math.round(Math.random())];
+
+        for (let i = 0; i < length; i++) {
+
+            let wall: CellData = {
+                positionX: grid[randIndex].positionX + (direction[0] * i) * CellW,
+                positionY: grid[randIndex].positionY + (direction[1] * i) * CellH,
+                class: "",
+                height: CellH,
+                width: CellW,
+                x: grid[randIndex].x + direction[0] * i,
+                y: grid[randIndex].y + direction[1] * i
+            };
+
+            Walls.push(wall);
+        }
+    }
+}
+
+function drawWalls() {
+    ctx.fillStyle = "rgb(140, 99, 99)";
+    ctx.strokeStyle = "rgb(84, 84, 84)";
+    ctx.lineWidth = 3;
+
+    let rect: Path2D = new Path2D()
+
+    for (let i = 0; i < Walls.length; i++) {
+
+        rect.rect(Walls[i].positionX, Walls[i].positionY, Walls[i].width, Walls[i].height);
+
+        ctx.fill(rect);
+        ctx.stroke(rect);
+    }
+}
+
+// function checkSelfCollision(): boolean {
+//     for (let i = 1; i < snake.length; i++) {
+//         if (snake[0].x === snake[i].x && snake[0].y === snake[i].y) {
+//             return true;
+//         }
+//     }
+//     return false;
+// }
+
 let viewDistance = 300;
 
 let bg: Path2D = new Path2D();
@@ -329,6 +377,7 @@ let grid: CellData[] = [];
 let snake: SnakeCellData[] = [];
 let Bounds: CellData[] = [];
 let Food: CellData[] = [];
+let Walls: CellData[] = [];
 
 let GridY: number = 40;
 let GridX: number = 40;
@@ -336,10 +385,13 @@ let GridX: number = 40;
 let CellW: number = 25;
 let CellH: number = 25;
 
+//let selfCollide: boolean = false;
+
 generateGrid(canvas.width, canvas.height, GridX, GridY);
 generateBounds();
 generateFood();
 generateSnake(2, 5, 5);
+generateWalls(25);
 
 let delay: number = 0;
 
@@ -350,7 +402,9 @@ function animate() {
             viewDistance -= 2;
         }
 
-        if (snake[0].positionX < CellW || snake[0].positionX > CellW * (GridX - 1) || snake[0].positionY < CellH || snake[0].positionY > CellH * (GridY - 1)) {
+        //selfCollide = checkSelfCollision();
+        //check for wall collision -----------------------------------
+        if (/*selfCollide ||*/ snake[0].positionX < CellW || snake[0].positionX > CellW * (GridX - 1) || snake[0].positionY < CellH || snake[0].positionY > CellH * (GridY - 1)) {
 
         } else {
             delay = 0;
@@ -381,6 +435,7 @@ function animate() {
 
 drawGrid();
 drawBounds();
+drawWalls();
 let imgData: ImageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
 
 requestAnimationFrame(animate);
