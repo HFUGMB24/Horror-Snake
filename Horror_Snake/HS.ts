@@ -158,22 +158,20 @@ function generateSnake(length: number, startX: number, startY: number) {
     snake[0].isTop = true;
 }
 
-function feedSnake(amount: number) {
-    for (let i = 0; i < amount; i++) {
-
-        let cell: SnakeCellData = {
-            direction: "",
-            positionX: 0,
-            positionY: 0,
-            height: GridH,
-            width: GridW,
-            isTop: false,
-            x: -i,
-            y: 0
-        };
-
-        snake.push(cell);
-    }
+function feedSnake() {
+    // Add a new segment at the same position as the tail
+    let tail = snake[snake.length - 1];
+    let newSegment: SnakeCellData = {
+        direction: tail.direction,
+        positionX: tail.positionX,
+        positionY: tail.positionY,
+        height: GridH,
+        width: GridW,
+        isTop: false,
+        x: tail.x,
+        y: tail.y
+    };
+    snake.push(newSegment);
 }
 
 function drawSnake() {
@@ -202,11 +200,14 @@ function drawSnake() {
 }
 
 function moveSnake() {
-    for (let i = 1; i < snake.length; i++) {
+    // Move body
+    for (let i = snake.length - 1; i > 0; i--) {
         snake[i].x = snake[i - 1].x;
         snake[i].y = snake[i - 1].y;
+        snake[i].direction = snake[i - 1].direction;
     }
 
+    // Move head
     switch (snake[0].direction) {
         case "left":
             snake[0].x--;
@@ -222,8 +223,8 @@ function moveSnake() {
             break;
     }
 
+    // Update positions
     for (let i = 0; i < snake.length; i++) {
-
         for (let j = 0; j < grid.length; j++) {
             if (grid[j].x == snake[i].x && grid[j].y == snake[i].y) {
                 snake[i].positionX = grid[j].positionX;
@@ -268,22 +269,21 @@ function drawBounds() {
     }
 }
 
-function generateFood(amount: number) {
-    for (let i = 0; i < amount; i++) {
-        let randIndex: number = Math.floor(Math.random() * grid.length - 1);
+function generateFood() {
+    let randIndex: number = Math.floor(Math.random() * grid.length - 1);
 
-        let food: CellData = {
-            positionX: grid[randIndex].positionX,
-            positionY: grid[randIndex].positionY,
-            class: "",
-            height: GridH,
-            width: GridW,
-            x: grid[randIndex].x,
-            y: grid[randIndex].y
-        };
+    let food: CellData = {
+        positionX: grid[randIndex].positionX,
+        positionY: grid[randIndex].positionY,
+        class: "",
+        height: GridH,
+        width: GridW,
+        x: grid[randIndex].x,
+        y: grid[randIndex].y
+    };
 
-        Food.push(food);
-    }
+    Food.push(food);
+
 }
 
 function addFood() {
@@ -293,8 +293,8 @@ function addFood() {
         positionX: grid[randIndex].positionX,
         positionY: grid[randIndex].positionY,
         class: "",
-        height: GridH / 2,
-        width: GridW / 2,
+        height: GridH,
+        width: GridW,
         x: grid[randIndex].x,
         y: grid[randIndex].y
     };
@@ -338,34 +338,32 @@ let GridH: number = 25;
 
 generateGrid(canvas.width, canvas.height, GridX, GridY);
 generateBounds();
-generateFood(1);
+generateFood();
 generateSnake(2, 5, 5);
 
 let delay: number = 0;
 
 function animate() {
-    delay++;
-    if (delay == 30) {
+    moveSnake();
 
-        if (snake[0].x == Food[0].x && snake[0].y == Food[0].y) {
-            Food.pop();
-            feedSnake(1);
-        }
-
-        moveSnake();
-        drawGrid();
-        drawBounds();
-        drawFood();
-        drawSnake();
-        drawVignette();
-        delay = 0;
-
-
-        requestAnimationFrame(animate);
-
+    // Check if snake's head collides with food
+    if (snake[0].x === Food[0].x && snake[0].y === Food[0].y) {
+        console.log("Snake length before eating:", snake.length);
+        Food.pop();
+        addFood();
+        feedSnake();
+        console.log("Snake length after eating:", snake.length);
     }
-}
-    requestAnimationFrame(animate);
 
-    console.log(grid);
-    console.log(Bounds);
+    drawGrid();
+    drawBounds();
+    drawFood();
+    drawSnake();
+    drawVignette();
+
+    requestAnimationFrame(animate);
+}
+requestAnimationFrame(animate);
+
+console.log(grid);
+console.log(Bounds);
