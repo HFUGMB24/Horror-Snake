@@ -354,15 +354,22 @@ function animate() {
         feedSnake();
         console.log("Snake length after eating:", snake.length);
     }
+    ctx.putImageData(imgData, 0, 0);
+    // drawGrid();
+    // drawBounds();
 
-    drawGrid();
-    drawBounds();
+
     drawFood();
     drawSnake();
     drawVignette();
 
     requestAnimationFrame(animate);
 }
+
+drawGrid();
+drawBounds();
+let imgData: ImageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+
 requestAnimationFrame(animate);
 
 console.log(grid);
