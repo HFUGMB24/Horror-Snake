@@ -106,6 +106,21 @@ function generateSnake(length, startX, startY) {
     }
     snake[0].isTop = true;
 }
+function feedSnake(amount) {
+    for (var i = 0; i < amount; i++) {
+        var cell = {
+            direction: "",
+            positionX: 0,
+            positionY: 0,
+            height: GridH,
+            width: GridW,
+            isTop: false,
+            x: -i,
+            y: 0
+        };
+        snake.push(cell);
+    }
+}
 function drawSnake() {
     for (var i = 0; i < snake.length; i++) {
         var cell = snake[i];
@@ -113,6 +128,7 @@ function drawSnake() {
         var posY = 0;
         ctx.fillStyle = "rgb(81, 50, 31)";
         ctx.strokeStyle = "rgb(0, 0, 0)";
+        ctx.lineWidth = 1;
         var rect = new Path2D();
         for (var j = 0; j < grid.length; j++) {
             if (grid[j].x == cell.x && grid[j].y == cell.y) {
@@ -153,6 +169,72 @@ function moveSnake() {
         }
     }
 }
+function generateBounds() {
+    for (var i = 0; i < grid.length; i++) {
+        if (grid[i].x == GridX - 1 || grid[i].x == 0 || grid[i].y == GridY - 1 || grid[i].y == 0) {
+            var cell = {
+                positionX: grid[i].positionX,
+                positionY: grid[i].positionY,
+                class: "",
+                height: GridH,
+                width: GridW,
+                x: grid[i].x,
+                y: grid[i].y
+            };
+            Bounds.push(cell);
+        }
+    }
+}
+function drawBounds() {
+    ctx.fillStyle = "rgb(140, 99, 99)";
+    ctx.strokeStyle = "rgb(84, 84, 84)";
+    ctx.lineWidth = 3;
+    var rect = new Path2D();
+    for (var i = 0; i < Bounds.length; i++) {
+        rect.rect(Bounds[i].positionX, Bounds[i].positionY, Bounds[i].width, Bounds[i].height);
+        ctx.fill(rect);
+        ctx.stroke(rect);
+    }
+}
+function generateFood(amount) {
+    for (var i = 0; i < amount; i++) {
+        var randIndex = Math.floor(Math.random() * grid.length - 1);
+        var food = {
+            positionX: grid[randIndex].positionX,
+            positionY: grid[randIndex].positionY,
+            class: "",
+            height: GridH,
+            width: GridW,
+            x: grid[randIndex].x,
+            y: grid[randIndex].y
+        };
+        Food.push(food);
+    }
+}
+function addFood() {
+    var randIndex = Math.floor(Math.random() * grid.length - 1);
+    var food = {
+        positionX: grid[randIndex].positionX,
+        positionY: grid[randIndex].positionY,
+        class: "",
+        height: GridH / 2,
+        width: GridW / 2,
+        x: grid[randIndex].x,
+        y: grid[randIndex].y
+    };
+    Food.push(food);
+}
+function drawFood() {
+    ctx.fillStyle = "rgb(189, 0, 0)";
+    ctx.strokeStyle = "rgb(255, 224, 122)";
+    ctx.lineWidth = GridH / 2;
+    var rect = new Path2D();
+    for (var i = 0; i < Food.length; i++) {
+        rect.rect(Food[i].positionX, Food[i].positionY, Food[i].width, Food[i].height);
+        ctx.fill(rect);
+        ctx.stroke(rect);
+    }
+}
 var viewDistance = 300;
 var bg = new Path2D();
 bg.rect(0, 0, canvas.width, canvas.height);
@@ -160,18 +242,33 @@ ctx.fillStyle = "rgb(255, 255, 255)";
 ctx.fill(bg);
 var grid = [];
 var snake = [];
+var Bounds = [];
+var Food = [];
 var GridY = 40;
 var GridX = 40;
 var GridW = 25;
 var GridH = 25;
 generateGrid(canvas.width, canvas.height, GridX, GridY);
+generateBounds();
+generateFood(5);
 generateSnake(2, 5, 5);
 var delay = 0;
 function animate() {
     delay++;
     if (delay == 30) {
-        moveSnake();
+        for (var i = 1; i < Food.length; i++) {
+            if (snake[0].x == Food[i].x && snake[0].y == Food[i].y) {
+                Food.splice(i, 1);
+                feedSnake(1);
+                moveSnake();
+            }
+            else {
+                moveSnake();
+            }
+        }
         drawGrid();
+        drawBounds();
+        drawFood();
         drawSnake();
         drawVignette();
         delay = 0;
@@ -180,3 +277,4 @@ function animate() {
 }
 requestAnimationFrame(animate);
 console.log(grid);
+console.log(Bounds);
