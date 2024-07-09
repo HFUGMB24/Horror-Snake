@@ -1,19 +1,18 @@
-"use strict";
-const canvas = document.getElementsByTagName("canvas")[0];
-const ctx = canvas.getContext("2d");
+var canvas = document.getElementsByTagName("canvas")[0];
+var ctx = canvas.getContext("2d");
 function drawVignette() {
     //draw light
     ctx.globalCompositeOperation = "lighten";
-    let gradient = ctx.createRadialGradient(snake[0].positionX + GridW / 2, snake[0].positionY + GridH / 2, 0, snake[0].positionX + GridW / 2, snake[0].positionY + GridH / 2, viewDistance);
+    var gradient = ctx.createRadialGradient(snake[0].positionX + CellW / 2, snake[0].positionY + CellH / 2, 0, snake[0].positionX + CellW / 2, snake[0].positionY + CellH / 2, viewDistance);
     gradient.addColorStop(0, "rgba(226, 216, 182, 0.8)");
     gradient.addColorStop(1, "rgba(0, 0, 0, 1)");
     ctx.fillStyle = gradient;
-    let vignette = new Path2D();
+    var vignette = new Path2D();
     vignette.rect(0, 0, canvas.width, canvas.height);
     ctx.fill(vignette);
     //draw darkness
     ctx.globalCompositeOperation = "source-over";
-    gradient = ctx.createRadialGradient(snake[0].positionX + GridW / 2, snake[0].positionY + GridH / 2, 0, snake[0].positionX + GridW / 2, snake[0].positionY + GridH / 2, viewDistance);
+    gradient = ctx.createRadialGradient(snake[0].positionX + CellW / 2, snake[0].positionY + CellH / 2, 0, snake[0].positionX + CellW / 2, snake[0].positionY + CellH / 2, viewDistance);
     gradient.addColorStop(0, "rgba(0,0,0,0)");
     gradient.addColorStop(1, "rgba(0,0,0,1)");
     ctx.fillStyle = gradient;
@@ -21,16 +20,16 @@ function drawVignette() {
     ctx.fill(vignette);
 }
 function generateGrid(width, height, rows, cols) {
-    for (let i = 0; i <= cols; i++) {
-        let x = i * GridW;
-        for (let j = 0; j <= rows; j++) {
-            let y = j * GridH;
-            let cell = {
+    for (var i = 0; i <= cols; i++) {
+        var x = i * CellW;
+        for (var j = 0; j <= rows; j++) {
+            var y = j * CellH;
+            var cell = {
                 positionX: x,
                 positionY: y,
                 class: "",
-                height: GridH,
-                width: GridW,
+                height: CellH,
+                width: CellW,
                 x: i,
                 y: j
             };
@@ -42,15 +41,15 @@ function drawGrid() {
     ctx.strokeStyle = 'rgb(255, 255, 255)';
     ctx.fillStyle = "rgb(0, 0, 0)";
     ctx.lineWidth = 1;
-    for (let i = 0; i < grid.length; i++) {
-        let cell = grid[i];
-        let rect = new Path2D();
+    for (var i = 0; i < grid.length; i++) {
+        var cell = grid[i];
+        var rect = new Path2D();
         rect.rect(cell.positionX, cell.positionY, cell.width, cell.height);
         ctx.fill(rect);
         ctx.stroke(rect);
     }
 }
-window.addEventListener("keypress", _event => {
+window.addEventListener("keypress", function (_event) {
     switch (_event.key) {
         case "w":
             if (snake[0].direction == "down") {
@@ -83,20 +82,20 @@ window.addEventListener("keypress", _event => {
     }
 });
 function generateSnake(length, startX, startY) {
-    for (let i = 0; i < length; i++) {
-        let posX;
-        let posY;
+    for (var i = 0; i < length; i++) {
+        var posX = void 0;
+        var posY = void 0;
         //scan the grid Array for the position for the snake Start
-        for (let j = 0; j < grid.length; j++) {
+        for (var j = 0; j < grid.length; j++) {
             if (snake.length <= length && grid[j].x == startX + snake.length && grid[j].y == startY) {
                 posX = grid[j].positionX;
                 posY = grid[j].positionY;
-                let cell = {
-                    direction: "left",
+                var cell = {
+                    direction: "right",
                     positionX: posX,
                     positionY: posY,
-                    height: GridH,
-                    width: GridW,
+                    height: CellH,
+                    width: CellW,
                     isTop: false,
                     x: grid[j].x,
                     y: grid[j].y
@@ -109,13 +108,13 @@ function generateSnake(length, startX, startY) {
 }
 function feedSnake() {
     // Add a new segment at the same position as the tail
-    let tail = snake[snake.length - 1];
-    let newSegment = {
+    var tail = snake[snake.length - 1];
+    var newSegment = {
         direction: tail.direction,
         positionX: tail.positionX,
         positionY: tail.positionY,
-        height: GridH,
-        width: GridW,
+        height: CellH,
+        width: CellW,
         isTop: false,
         x: tail.x,
         y: tail.y
@@ -123,15 +122,15 @@ function feedSnake() {
     snake.push(newSegment);
 }
 function drawSnake() {
-    for (let i = 0; i < snake.length; i++) {
-        let cell = snake[i];
-        let posX = 0;
-        let posY = 0;
+    for (var i = 0; i < snake.length; i++) {
+        var cell = snake[i];
+        var posX = 0;
+        var posY = 0;
         ctx.fillStyle = "rgb(81, 50, 31)";
         ctx.strokeStyle = "rgb(0, 0, 0)";
         ctx.lineWidth = 1;
-        let rect = new Path2D();
-        for (let j = 0; j < grid.length; j++) {
+        var rect = new Path2D();
+        for (var j = 0; j < grid.length; j++) {
             if (grid[j].x == cell.x && grid[j].y == cell.y) {
                 posX = grid[j].positionX;
                 posY = grid[j].positionY;
@@ -144,7 +143,7 @@ function drawSnake() {
 }
 function moveSnake() {
     // Move body
-    for (let i = snake.length - 1; i > 0; i--) {
+    for (var i = snake.length - 1; i > 0; i--) {
         snake[i].x = snake[i - 1].x;
         snake[i].y = snake[i - 1].y;
         snake[i].direction = snake[i - 1].direction;
@@ -165,8 +164,8 @@ function moveSnake() {
             break;
     }
     // Update positions
-    for (let i = 0; i < snake.length; i++) {
-        for (let j = 0; j < grid.length; j++) {
+    for (var i = 0; i < snake.length; i++) {
+        for (var j = 0; j < grid.length; j++) {
             if (grid[j].x == snake[i].x && grid[j].y == snake[i].y) {
                 snake[i].positionX = grid[j].positionX;
                 snake[i].positionY = grid[j].positionY;
@@ -175,14 +174,14 @@ function moveSnake() {
     }
 }
 function generateBounds() {
-    for (let i = 0; i < grid.length; i++) {
+    for (var i = 0; i < grid.length; i++) {
         if (grid[i].x == GridX - 1 || grid[i].x == 0 || grid[i].y == GridY - 1 || grid[i].y == 0) {
-            let cell = {
+            var cell = {
                 positionX: grid[i].positionX,
                 positionY: grid[i].positionY,
                 class: "",
-                height: GridH,
-                width: GridW,
+                height: CellH,
+                width: CellW,
                 x: grid[i].x,
                 y: grid[i].y
             };
@@ -194,34 +193,34 @@ function drawBounds() {
     ctx.fillStyle = "rgb(140, 99, 99)";
     ctx.strokeStyle = "rgb(84, 84, 84)";
     ctx.lineWidth = 3;
-    let rect = new Path2D();
-    for (let i = 0; i < Bounds.length; i++) {
+    var rect = new Path2D();
+    for (var i = 0; i < Bounds.length; i++) {
         rect.rect(Bounds[i].positionX, Bounds[i].positionY, Bounds[i].width, Bounds[i].height);
         ctx.fill(rect);
         ctx.stroke(rect);
     }
 }
 function generateFood() {
-    let randIndex = Math.floor(Math.random() * grid.length - 1);
-    let food = {
+    var randIndex = Math.floor(Math.random() * grid.length - 1);
+    var food = {
         positionX: grid[randIndex].positionX,
         positionY: grid[randIndex].positionY,
         class: "",
-        height: GridH,
-        width: GridW,
+        height: CellH,
+        width: CellW,
         x: grid[randIndex].x,
         y: grid[randIndex].y
     };
     Food.push(food);
 }
 function addFood() {
-    let randIndex = Math.floor(Math.random() * grid.length - 1);
-    let food = {
+    var randIndex = Math.floor(Math.random() * grid.length - 1);
+    var food = {
         positionX: grid[randIndex].positionX,
         positionY: grid[randIndex].positionY,
         class: "",
-        height: GridH,
-        width: GridW,
+        height: CellH,
+        width: CellW,
         x: grid[randIndex].x,
         y: grid[randIndex].y
     };
@@ -230,53 +229,59 @@ function addFood() {
 function drawFood() {
     ctx.fillStyle = "rgb(189, 0, 0)";
     ctx.strokeStyle = "rgb(255, 224, 122)";
-    ctx.lineWidth = GridH / 2;
-    let rect = new Path2D();
-    for (let i = 0; i < Food.length; i++) {
+    ctx.lineWidth = CellH / 2;
+    var rect = new Path2D();
+    for (var i = 0; i < Food.length; i++) {
         rect.rect(Food[i].positionX, Food[i].positionY, Food[i].width, Food[i].height);
         ctx.fill(rect);
         ctx.stroke(rect);
     }
 }
-let viewDistance = 300;
-let bg = new Path2D();
+var viewDistance = 300;
+var bg = new Path2D();
 bg.rect(0, 0, canvas.width, canvas.height);
 ctx.fillStyle = "rgb(255, 255, 255)";
 ctx.fill(bg);
-let grid = [];
-let snake = [];
-let Bounds = [];
-let Food = [];
-let GridY = 40;
-let GridX = 40;
-let GridW = 25;
-let GridH = 25;
+var grid = [];
+var snake = [];
+var Bounds = [];
+var Food = [];
+var GridY = 40;
+var GridX = 40;
+var CellW = 25;
+var CellH = 25;
 generateGrid(canvas.width, canvas.height, GridX, GridY);
 generateBounds();
 generateFood();
 generateSnake(2, 5, 5);
-let delay = 0;
+var delay = 0;
 function animate() {
-    moveSnake();
-    // Check if snake's head collides with food
-    if (snake[0].x === Food[0].x && snake[0].y === Food[0].y) {
-        console.log("Snake length before eating:", snake.length);
-        Food.pop();
-        addFood();
-        feedSnake();
-        console.log("Snake length after eating:", snake.length);
+    delay++;
+    if (delay == 20) {
+        if (snake[0].positionX < CellW || snake[0].positionX > CellW * (GridX - 2) || snake[0].positionY < CellH || snake[0].positionY > CellH * (GridY - 2)) {
+        }
+        else {
+            delay = 0;
+            moveSnake();
+            // Check if snake's head collides with food
+            if (snake[0].x === Food[0].x && snake[0].y === Food[0].y) {
+                Food.pop();
+                addFood();
+                feedSnake();
+            }
+            ctx.putImageData(imgData, 0, 0);
+            // drawGrid();
+            // drawBounds();
+            drawFood();
+            drawSnake();
+            drawVignette();
+        }
     }
-    ctx.putImageData(imgData, 0, 0);
-    // drawGrid();
-    // drawBounds();
-    drawFood();
-    drawSnake();
-    drawVignette();
     requestAnimationFrame(animate);
 }
 drawGrid();
 drawBounds();
-let imgData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+var imgData = ctx.getImageData(0, 0, canvas.width, canvas.height);
 requestAnimationFrame(animate);
 console.log(grid);
 console.log(Bounds);

@@ -26,7 +26,7 @@ function drawVignette() {
     //draw light
     ctx.globalCompositeOperation = "lighten";
 
-    let gradient = ctx.createRadialGradient(snake[0].positionX + GridW / 2, snake[0].positionY + GridH / 2, 0, snake[0].positionX + GridW / 2, snake[0].positionY + GridH / 2, viewDistance);
+    let gradient = ctx.createRadialGradient(snake[0].positionX + CellW / 2, snake[0].positionY + CellH / 2, 0, snake[0].positionX + CellW / 2, snake[0].positionY + CellH / 2, viewDistance);
     gradient.addColorStop(0, "rgba(226, 216, 182, 0.8)");
     gradient.addColorStop(1, "rgba(0, 0, 0, 1)");
 
@@ -39,7 +39,7 @@ function drawVignette() {
     //draw darkness
     ctx.globalCompositeOperation = "source-over";
 
-    gradient = ctx.createRadialGradient(snake[0].positionX + GridW / 2, snake[0].positionY + GridH / 2, 0, snake[0].positionX + GridW / 2, snake[0].positionY + GridH / 2, viewDistance);
+    gradient = ctx.createRadialGradient(snake[0].positionX + CellW / 2, snake[0].positionY + CellH / 2, 0, snake[0].positionX + CellW / 2, snake[0].positionY + CellH / 2, viewDistance);
     gradient.addColorStop(0, "rgba(0,0,0,0)");
     gradient.addColorStop(1, "rgba(0,0,0,1)");
 
@@ -55,18 +55,18 @@ function generateGrid(width: number, height: number, rows: number, cols: number)
 
     for (let i = 0; i <= cols; i++) {
 
-        let x = i * GridW;
+        let x = i * CellW;
 
         for (let j = 0; j <= rows; j++) {
 
-            let y = j * GridH;
+            let y = j * CellH;
 
             let cell: CellData = {
                 positionX: x,
                 positionY: y,
                 class: "",
-                height: GridH,
-                width: GridW,
+                height: CellH,
+                width: CellW,
                 x: i,
                 y: j
             };
@@ -141,11 +141,11 @@ function generateSnake(length: number, startX: number, startY: number) {
                 posY = grid[j].positionY;
 
                 let cell: SnakeCellData = {
-                    direction: "left",
+                    direction: "right",
                     positionX: posX,
                     positionY: posY,
-                    height: GridH,
-                    width: GridW,
+                    height: CellH,
+                    width: CellW,
                     isTop: false,
                     x: grid[j].x,
                     y: grid[j].y
@@ -165,8 +165,8 @@ function feedSnake() {
         direction: tail.direction,
         positionX: tail.positionX,
         positionY: tail.positionY,
-        height: GridH,
-        width: GridW,
+        height: CellH,
+        width: CellW,
         isTop: false,
         x: tail.x,
         y: tail.y
@@ -242,8 +242,8 @@ function generateBounds() {
                 positionX: grid[i].positionX,
                 positionY: grid[i].positionY,
                 class: "",
-                height: GridH,
-                width: GridW,
+                height: CellH,
+                width: CellW,
                 x: grid[i].x,
                 y: grid[i].y
             };
@@ -276,8 +276,8 @@ function generateFood() {
         positionX: grid[randIndex].positionX,
         positionY: grid[randIndex].positionY,
         class: "",
-        height: GridH,
-        width: GridW,
+        height: CellH,
+        width: CellW,
         x: grid[randIndex].x,
         y: grid[randIndex].y
     };
@@ -293,8 +293,8 @@ function addFood() {
         positionX: grid[randIndex].positionX,
         positionY: grid[randIndex].positionY,
         class: "",
-        height: GridH,
-        width: GridW,
+        height: CellH,
+        width: CellW,
         x: grid[randIndex].x,
         y: grid[randIndex].y
     };
@@ -306,7 +306,7 @@ function drawFood() {
 
     ctx.fillStyle = "rgb(189, 0, 0)";
     ctx.strokeStyle = "rgb(255, 224, 122)";
-    ctx.lineWidth = GridH / 2;
+    ctx.lineWidth = CellH / 2;
 
     let rect: Path2D = new Path2D();
 
@@ -333,8 +333,8 @@ let Food: CellData[] = [];
 let GridY: number = 40;
 let GridX: number = 40;
 
-let GridW: number = 25;
-let GridH: number = 25;
+let CellW: number = 25;
+let CellH: number = 25;
 
 generateGrid(canvas.width, canvas.height, GridX, GridY);
 generateBounds();
@@ -344,24 +344,34 @@ generateSnake(2, 5, 5);
 let delay: number = 0;
 
 function animate() {
-    moveSnake();
+    delay++
+    if (delay == 20) {
 
-    // Check if snake's head collides with food
-    if (snake[0].x === Food[0].x && snake[0].y === Food[0].y) {
-        console.log("Snake length before eating:", snake.length);
-        Food.pop();
-        addFood();
-        feedSnake();
-        console.log("Snake length after eating:", snake.length);
+
+        if (snake[0].positionX < CellW || snake[0].positionX > CellW * (GridX - 2) || snake[0].positionY < CellH || snake[0].positionY > CellH * (GridY - 2)) {
+
+        } else {
+            delay = 0;
+
+            moveSnake();
+
+            // Check if snake's head collides with food
+            if (snake[0].x === Food[0].x && snake[0].y === Food[0].y) {
+                Food.pop();
+                addFood();
+                feedSnake();
+            }
+            ctx.putImageData(imgData, 0, 0);
+            // drawGrid();
+            // drawBounds();
+
+            drawFood();
+            drawSnake();
+            drawVignette();
+        }
+
+
     }
-    ctx.putImageData(imgData, 0, 0);
-    // drawGrid();
-    // drawBounds();
-
-
-    drawFood();
-    drawSnake();
-    drawVignette();
 
     requestAnimationFrame(animate);
 }
