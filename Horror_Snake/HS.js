@@ -250,30 +250,25 @@ var GridW = 25;
 var GridH = 25;
 generateGrid(canvas.width, canvas.height, GridX, GridY);
 generateBounds();
-generateFood(5);
+generateFood(1);
 generateSnake(2, 5, 5);
 var delay = 0;
 function animate() {
     delay++;
     if (delay == 30) {
-        for (var i = 1; i < Food.length; i++) {
-            if (snake[0].x == Food[i].x && snake[0].y == Food[i].y) {
-                Food.splice(i, 1);
-                feedSnake(1);
-                moveSnake();
-            }
-            else {
-                moveSnake();
-            }
+        if (snake[0].x == Food[0].x && snake[0].y == Food[0].y) {
+            Food.pop();
+            feedSnake(1);
         }
+        moveSnake();
         drawGrid();
         drawBounds();
         drawFood();
         drawSnake();
         drawVignette();
         delay = 0;
+        requestAnimationFrame(animate);
     }
-    requestAnimationFrame(animate);
 }
 requestAnimationFrame(animate);
 console.log(grid);
