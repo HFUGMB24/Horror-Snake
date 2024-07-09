@@ -442,6 +442,58 @@ function drawThief() {
         ctx.stroke(rect);
     }
 }
+
+function generateBlindFood() {
+    let randIndex: number = Math.floor(Math.random() * grid.length - 1);
+
+    let food: CellData = {
+        positionX: grid[randIndex].positionX,
+        positionY: grid[randIndex].positionY,
+        class: "",
+        height: CellH,
+        width: CellW,
+        x: grid[randIndex].x,
+        y: grid[randIndex].y
+    };
+
+    BlindFood.push(food);
+
+}
+
+
+
+function addBlindFood() {
+    let randIndex: number = Math.floor(Math.random() * grid.length - 1);
+
+    let food: CellData = {
+        positionX: grid[randIndex].positionX,
+        positionY: grid[randIndex].positionY,
+        class: "",
+        height: CellH,
+        width: CellW,
+        x: grid[randIndex].x,
+        y: grid[randIndex].y
+    };
+
+    BlindFood.push(food);
+}
+
+function drawBlindFood() {
+
+    ctx.fillStyle = "rgb(189, 0, 0)";
+    ctx.strokeStyle = "rgb(255, 224, 122)";
+    ctx.lineWidth = CellH / 2;
+
+    let rect: Path2D = new Path2D();
+
+    for (let i = 0; i < BlindFood.length; i++) {
+        rect.rect(BlindFood[i].positionX, BlindFood[i].positionY, BlindFood[i].width, BlindFood[i].height);
+
+        ctx.fill(rect);
+        ctx.stroke(rect);
+    }
+}
+
 // function checkSelfCollision(): boolean {
 //     for (let i = 1; i < snake.length; i++) {
 //         if (snake[0].x === snake[i].x && snake[0].y === snake[i].y) {
@@ -462,20 +514,22 @@ let grid: CellData[] = [];
 let snake: SnakeCellData[] = [];
 let Bounds: CellData[] = [];
 let Food: CellData[] = [];
+let BlindFood: CellData[] = [];
 let Walls: CellData[] = [];
 let Thief: ThiefCellData[] = [];
 
 let GridY: number = 40;
 let GridX: number = 40;
 
-let CellW: number = 25;
-let CellH: number = 25;
+let CellW: number = 27;
+let CellH: number = 27;
 
 //let selfCollide: boolean = false;
 
 generateGrid(canvas.width, canvas.height, GridX, GridY);
 generateBounds();
 generateFood();
+generateBlindFood();
 generateSnake(2, 5, 5);
 generateWalls(25);
 generateThief();
@@ -506,11 +560,20 @@ function animate() {
                 feedSnake();
                 viewDistance = 300;
             }
+
+            if (snake[0].x === BlindFood[0].x && snake[0].y === BlindFood[0].y) {
+                BlindFood.pop();
+                addBlindFood();
+                feedSnake();
+                viewDistance = 300;
+            }
+
             ctx.putImageData(imgData, 0, 0);
             // drawGrid();
             // drawBounds();
             drawThief();
             drawFood();
+            drawBlindFood();
             drawSnake();
             //drawVignette();
         }
