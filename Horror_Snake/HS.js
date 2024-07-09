@@ -258,6 +258,9 @@ var delay = 0;
 function animate() {
     delay++;
     if (delay == 20) {
+        if (viewDistance > 100) {
+            viewDistance -= 2;
+        }
         if (snake[0].positionX < CellW || snake[0].positionX > CellW * (GridX - 1) || snake[0].positionY < CellH || snake[0].positionY > CellH * (GridY - 1)) {
         }
         else {
@@ -268,6 +271,7 @@ function animate() {
                 Food.pop();
                 addFood();
                 feedSnake();
+                viewDistance = 300;
             }
             ctx.putImageData(imgData, 0, 0);
             // drawGrid();

@@ -53,11 +53,11 @@ function drawVignette() {
 
 function generateGrid(width: number, height: number, rows: number, cols: number) {
 
-    for (let i = 0; i <= cols-1; i++) {
+    for (let i = 0; i <= cols - 1; i++) {
 
         let x = i * CellW;
 
-        for (let j = 0; j <= rows-1; j++) {
+        for (let j = 0; j <= rows - 1; j++) {
 
             let y = j * CellH;
 
@@ -346,7 +346,9 @@ let delay: number = 0;
 function animate() {
     delay++
     if (delay == 20) {
-
+        if (viewDistance > 100) {
+            viewDistance -= 2;
+        }
 
         if (snake[0].positionX < CellW || snake[0].positionX > CellW * (GridX - 1) || snake[0].positionY < CellH || snake[0].positionY > CellH * (GridY - 1)) {
 
@@ -360,6 +362,7 @@ function animate() {
                 Food.pop();
                 addFood();
                 feedSnake();
+                viewDistance = 300;
             }
             ctx.putImageData(imgData, 0, 0);
             // drawGrid();
