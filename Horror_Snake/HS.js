@@ -20,9 +20,9 @@ function drawVignette() {
     ctx.fill(vignette);
 }
 function generateGrid(width, height, rows, cols) {
-    for (var i = 0; i <= cols; i++) {
+    for (var i = 0; i <= cols - 1; i++) {
         var x = i * CellW;
-        for (var j = 0; j <= rows; j++) {
+        for (var j = 0; j <= rows - 1; j++) {
             var y = j * CellH;
             var cell = {
                 positionX: x,
@@ -258,7 +258,7 @@ var delay = 0;
 function animate() {
     delay++;
     if (delay == 20) {
-        if (snake[0].positionX < CellW || snake[0].positionX > CellW * (GridX - 2) || snake[0].positionY < CellH || snake[0].positionY > CellH * (GridY - 2)) {
+        if (snake[0].positionX < CellW || snake[0].positionX > CellW * (GridX - 1) || snake[0].positionY < CellH || snake[0].positionY > CellH * (GridY - 1)) {
         }
         else {
             delay = 0;

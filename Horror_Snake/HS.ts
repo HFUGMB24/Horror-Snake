@@ -53,11 +53,11 @@ function drawVignette() {
 
 function generateGrid(width: number, height: number, rows: number, cols: number) {
 
-    for (let i = 0; i <= cols; i++) {
+    for (let i = 0; i <= cols-1; i++) {
 
         let x = i * CellW;
 
-        for (let j = 0; j <= rows; j++) {
+        for (let j = 0; j <= rows-1; j++) {
 
             let y = j * CellH;
 
@@ -348,7 +348,7 @@ function animate() {
     if (delay == 20) {
 
 
-        if (snake[0].positionX < CellW || snake[0].positionX > CellW * (GridX - 2) || snake[0].positionY < CellH || snake[0].positionY > CellH * (GridY - 2)) {
+        if (snake[0].positionX < CellW || snake[0].positionX > CellW * (GridX - 1) || snake[0].positionY < CellH || snake[0].positionY > CellH * (GridY - 1)) {
 
         } else {
             delay = 0;
