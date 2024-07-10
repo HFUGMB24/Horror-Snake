@@ -370,20 +370,48 @@ function addFood() {
     Food.push(food);
 }
 
+//function drawFood() {
+//
+//    ctx.fillStyle = "rgb(189, 0, 0)";
+//    ctx.strokeStyle = "rgb(255, 224, 122)";
+//    ctx.lineWidth = CellH / 2;
+//
+//    let rect: Path2D = new Path2D();
+//
+//   for (let i = 0; i < Food.length; i++) {
+//        rect.rect(Food[i].positionX, Food[i].positionY, Food[i].width, Food[i].height);
+//
+//        ctx.fill(rect);
+//        ctx.stroke(rect);
+//    }
+//}
+
 function drawFood() {
+    const rabbit1 = new Image();
+    const rabbit2 = new Image();
+    rabbit1.src = 'textures/food/rabbit1.png';
+    rabbit2.src = 'textures/food/rabbit2.png';
 
-    ctx.fillStyle = "rgb(189, 0, 0)";
-    ctx.strokeStyle = "rgb(255, 224, 122)";
-    ctx.lineWidth = CellH / 2;
+    let currentImage = rabbit1;
+    let lastSwitchTime = Date.now();
 
-    let rect: Path2D = new Path2D();
+    function animateFood() {
+        const currentTime = Date.now();
+        if (currentTime - lastSwitchTime >= 500) {
+            currentImage = currentImage === rabbit1 ? rabbit2 : rabbit1;
+            lastSwitchTime = currentTime;
+        }
 
-    for (let i = 0; i < Food.length; i++) {
-        rect.rect(Food[i].positionX, Food[i].positionY, Food[i].width, Food[i].height);
+        for (let i = 0; i < Food.length; i++) {
+            ctx.drawImage(currentImage, Food[i].positionX, Food[i].positionY, Food[i].width, Food[i].height);
+        }
 
-        ctx.fill(rect);
-        ctx.stroke(rect);
+        requestAnimationFrame(animateFood);
     }
+
+    rabbit1.onload = rabbit2.onload = () => {
+        animateFood();
+    };
 }
 
 function generateWalls(amount: number) {

@@ -1,6 +1,32 @@
 "use strict";
 const canvas = document.getElementsByTagName("canvas")[0];
 const ctx = canvas.getContext("2d");
+{
+    const ctx = new (window.AudioContext || window.AudioContext)();
+    let audio;
+    fetch("./sounds/damage.wav");
+    fetch("./sounds/eat.wav");
+    fetch("./sounds/gameover.wav");
+    fetch("./sounds/ghost.wav");
+    fetch("./sounds/light.wav");
+    fetch("./sounds/reset.wav");
+    fetch("./sounds/slow.wav");
+    fetch("./sounds/speed.wav");
+    fetch("./sounds/thunder.wav");
+    fetch("./sounds/ambience_loop.wav");
+    fetch("./sounds/theme_loop.wav")
+        .then((data) => data.arrayBuffer())
+        .then((arrayBuffer) => ctx.decodeAudioData(arrayBuffer))
+        .then((decodedAudio) => {
+        audio = decodedAudio;
+    });
+    function playback() {
+        const playSound = ctx.createBufferSource();
+        playSound.buffer = audio;
+        playSound.connect(ctx.destination);
+        playSound.start(ctx.currentTime);
+    }
+}
 function drawVignette() {
     //draw light
     ctx.globalCompositeOperation = "lighten";
@@ -258,16 +284,42 @@ function addFood() {
     };
     Food.push(food);
 }
+//function drawFood() {
+//
+//    ctx.fillStyle = "rgb(189, 0, 0)";
+//    ctx.strokeStyle = "rgb(255, 224, 122)";
+//    ctx.lineWidth = CellH / 2;
+//
+//    let rect: Path2D = new Path2D();
+//
+//   for (let i = 0; i < Food.length; i++) {
+//        rect.rect(Food[i].positionX, Food[i].positionY, Food[i].width, Food[i].height);
+//
+//        ctx.fill(rect);
+//        ctx.stroke(rect);
+//    }
+//}
 function drawFood() {
-    ctx.fillStyle = "rgb(189, 0, 0)";
-    ctx.strokeStyle = "rgb(255, 224, 122)";
-    ctx.lineWidth = CellH / 2;
-    let rect = new Path2D();
-    for (let i = 0; i < Food.length; i++) {
-        rect.rect(Food[i].positionX, Food[i].positionY, Food[i].width, Food[i].height);
-        ctx.fill(rect);
-        ctx.stroke(rect);
+    const rabbit1 = new Image();
+    const rabbit2 = new Image();
+    rabbit1.src = 'textures/food/rabbit1.png';
+    rabbit2.src = 'textures/food/rabbit2.png';
+    let currentImage = rabbit1;
+    let lastSwitchTime = Date.now();
+    function animateFood() {
+        const currentTime = Date.now();
+        if (currentTime - lastSwitchTime >= 500) {
+            currentImage = currentImage === rabbit1 ? rabbit2 : rabbit1;
+            lastSwitchTime = currentTime;
+        }
+        for (let i = 0; i < Food.length; i++) {
+            ctx.drawImage(currentImage, Food[i].positionX, Food[i].positionY, Food[i].width, Food[i].height);
+        }
+        requestAnimationFrame(animateFood);
     }
+    rabbit1.onload = rabbit2.onload = () => {
+        animateFood();
+    };
 }
 function generateWalls(amount) {
     //generate n amount of walls with random orientation
