@@ -200,8 +200,32 @@ function drawBounds() {
         ctx.stroke(rect);
     }
 }
+function checkPosValid(posX, posY) {
+    // Check if position is within bounds
+    if (posX < CellW || posX >= CellW * (GridX - 1) || posY < CellH || posY >= CellH * (GridY - 1)) {
+        return false;
+    }
+    // Check if position overlaps with walls
+    for (var i = 0; i < Walls.length; i++) {
+        if (posX === Walls[i].positionX && posY === Walls[i].positionY) {
+            return false;
+        }
+    }
+    // Check if position overlaps with snake
+    for (var i = 0; i < snake.length; i++) {
+        if (posX === snake[i].positionX && posY === snake[i].positionY) {
+            return false;
+        }
+    }
+    return true;
+}
 function generateFood() {
-    var randIndex = Math.floor(Math.random() * grid.length - 1);
+    var validPosition = false;
+    var randIndex = 0;
+    while (!validPosition) {
+        randIndex = Math.floor(Math.random() * grid.length);
+        validPosition = checkPosValid(grid[randIndex].positionX, grid[randIndex].positionY);
+    }
     var food = {
         positionX: grid[randIndex].positionX,
         positionY: grid[randIndex].positionY,
@@ -214,7 +238,12 @@ function generateFood() {
     Food.push(food);
 }
 function addFood() {
-    var randIndex = Math.floor(Math.random() * grid.length - 1);
+    var validPosition = false;
+    var randIndex = 0;
+    while (!validPosition) {
+        randIndex = Math.floor(Math.random() * grid.length);
+        validPosition = checkPosValid(grid[randIndex].positionX, grid[randIndex].positionY);
+    }
     var food = {
         positionX: grid[randIndex].positionX,
         positionY: grid[randIndex].positionY,
@@ -330,7 +359,12 @@ function drawThief() {
     }
 }
 function generateBlindFood() {
-    var randIndex = Math.floor(Math.random() * grid.length - 1);
+    var validPosition = false;
+    var randIndex = 0;
+    while (!validPosition) {
+        randIndex = Math.floor(Math.random() * grid.length);
+        validPosition = checkPosValid(grid[randIndex].positionX, grid[randIndex].positionY);
+    }
     var food = {
         positionX: grid[randIndex].positionX,
         positionY: grid[randIndex].positionY,
@@ -343,7 +377,12 @@ function generateBlindFood() {
     BlindFood.push(food);
 }
 function addBlindFood() {
-    var randIndex = Math.floor(Math.random() * grid.length - 1);
+    var validPosition = false;
+    var randIndex = 0;
+    while (!validPosition) {
+        randIndex = Math.floor(Math.random() * grid.length);
+        validPosition = checkPosValid(grid[randIndex].positionX, grid[randIndex].positionY);
+    }
     var food = {
         positionX: grid[randIndex].positionX,
         positionY: grid[randIndex].positionY,
@@ -377,14 +416,22 @@ function jumpscare() {
     var randomIndex = Math.floor(Math.random() * images.length);
     ctx.drawImage(images[randomIndex], 0, 0, canvas.width, canvas.height);
 }
-// function checkSelfCollision(): boolean {
-//     for (let i = 1; i < snake.length; i++) {
-//         if (snake[0].x === snake[i].x && snake[0].y === snake[i].y) {
-//             return true;
-//         }
-//     }
-//     return false;
-// }
+function checkObstacleCollision() {
+    for (var i = 0; i < Walls.length; i++) {
+        if (snake[0].x === Walls[i].x && snake[0].y === Walls[i].y) {
+            return true;
+        }
+    }
+    return false;
+}
+function checkSelfCollision() {
+    for (var i = 1; i < snake.length; i++) {
+        if (snake[0].x === snake[i].x && snake[0].y === snake[i].y) {
+            return true;
+        }
+    }
+    return false;
+}
 var viewDistance = 300;
 var bg = new Path2D();
 bg.rect(0, 0, canvas.width, canvas.height);
@@ -402,7 +449,9 @@ var GridY = 40;
 var GridX = 40;
 var CellW = 27;
 var CellH = 27;
-//let selfCollide: boolean = false;
+var checkIsValid = false;
+var selfCollide = false;
+var obstacleCollide = false;
 generateGrid(canvas.width, canvas.height, GridX, GridY);
 generateBounds();
 generateFood();
@@ -419,8 +468,9 @@ function animate() {
             viewDistance -= 2;
         }
         //selfCollide = checkSelfCollision();
+        obstacleCollide = checkObstacleCollision();
         //check for wall collision -----------------------------------
-        if ( /*selfCollide ||*/snake[0].positionX < CellW || snake[0].positionX > CellW * (GridX - 1) || snake[0].positionY < CellH || snake[0].positionY > CellH * (GridY - 1)) {
+        if (obstacleCollide || snake[0].positionX < CellW || snake[0].positionX >= CellW * (GridX - 1) || snake[0].positionY < CellH || snake[0].positionY >= CellH * (GridY - 1)) {
         }
         else {
             delay = 0;
@@ -459,3 +509,4 @@ var imgData = ctx.getImageData(0, 0, canvas.width, canvas.height);
 requestAnimationFrame(animate);
 console.log(grid);
 console.log(Bounds);
+console.log(Walls);
