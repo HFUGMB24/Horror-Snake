@@ -312,8 +312,9 @@ function drawFood() {
             currentImage = currentImage === rabbit1 ? rabbit2 : rabbit1;
             lastSwitchTime = currentTime;
         }
+        ctx.imageSmoothingEnabled = false;
         for (let i = 0; i < Food.length; i++) {
-            ctx.drawImage(currentImage, Food[i].positionX, Food[i].positionY, Food[i].width, Food[i].height);
+            ctx.drawImage(currentImage, 0, 0, currentImage.width, currentImage.height, Food[i].positionX, Food[i].positionY, Food[i].width, Food[i].height);
         }
         requestAnimationFrame(animateFood);
     }
@@ -503,8 +504,13 @@ function drawBlindFood() {
             lastSwitchTime = currentTime;
         }
         const currentImage = images[currentImageIndex];
+        // Disable image smoothing
+        ctx.imageSmoothingEnabled = false;
         for (let i = 0; i < BlindFood.length; i++) {
-            ctx.drawImage(currentImage, BlindFood[i].positionX, BlindFood[i].positionY, BlindFood[i].width, BlindFood[i].height);
+            // Draw the image using all 9 arguments of drawImage
+            ctx.drawImage(currentImage, 0, 0, currentImage.width, currentImage.height, // Source rectangle
+            BlindFood[i].positionX, BlindFood[i].positionY, BlindFood[i].width, BlindFood[i].height // Destination rectangle
+            );
         }
         requestAnimationFrame(animateBlindFood);
     }
