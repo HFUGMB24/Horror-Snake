@@ -1,13 +1,55 @@
-var canvas = document.getElementsByTagName("canvas")[0];
-var ctx = canvas.getContext("2d");
+"use strict";
+const canvas = document.getElementsByTagName("canvas")[0];
+const ctx = canvas.getContext("2d");
+let grid = [];
+let snake = [];
+let Bounds = [];
+let Food = [];
+let BlindFood = [];
+let Walls = [];
+let Thief = [];
+let images = [];
+let GridY = 40;
+let GridX = 40;
+let CellW = 27;
+let CellH = 27;
+let viewDistance = 300;
+let delay = 0;
+// Load background image
+const backgroundImage = new Image();
+backgroundImage.src = "textures/level/Background.png";
+// Load wall and wallshadow images
+const wallImage = new Image();
+wallImage.src = "textures/level/wall.png";
+const wallShadowImage = new Image();
+wallShadowImage.src = "textures/level/wallshadow.png";
+function drawBackground() {
+    ctx.drawImage(backgroundImage, 0, 0, canvas.width, canvas.height);
+}
+function drawWalls() {
+    for (let i = 0; i < Walls.length; i++) {
+        // Draw wallshadow
+        ctx.drawImage(wallShadowImage, Walls[i].positionX, Walls[i].positionY, Walls[i].width, Walls[i].height);
+        // Draw wall
+        ctx.drawImage(wallImage, Walls[i].positionX, Walls[i].positionY, Walls[i].width, Walls[i].height);
+    }
+}
+function drawBounds() {
+    for (let i = 0; i < Bounds.length; i++) {
+        // Draw wallshadow
+        ctx.drawImage(wallShadowImage, Bounds[i].positionX, Bounds[i].positionY, Bounds[i].width, Bounds[i].height);
+        // Draw wall
+        ctx.drawImage(wallImage, Bounds[i].positionX, Bounds[i].positionY, Bounds[i].width, Bounds[i].height);
+    }
+}
 function drawVignette() {
     //draw light
     ctx.globalCompositeOperation = "lighten";
-    var gradient = ctx.createRadialGradient(snake[0].positionX + CellW / 2, snake[0].positionY + CellH / 2, 0, snake[0].positionX + CellW / 2, snake[0].positionY + CellH / 2, viewDistance);
+    let gradient = ctx.createRadialGradient(snake[0].positionX + CellW / 2, snake[0].positionY + CellH / 2, 0, snake[0].positionX + CellW / 2, snake[0].positionY + CellH / 2, viewDistance);
     gradient.addColorStop(0, "rgba(226, 216, 182, 0.8)");
     gradient.addColorStop(1, "rgba(0, 0, 0, 1)");
     ctx.fillStyle = gradient;
-    var vignette = new Path2D();
+    let vignette = new Path2D();
     vignette.rect(0, 0, canvas.width, canvas.height);
     ctx.fill(vignette);
     //draw darkness
@@ -20,11 +62,11 @@ function drawVignette() {
     ctx.fill(vignette);
 }
 function generateGrid(width, height, rows, cols) {
-    for (var i = 0; i <= cols - 1; i++) {
-        var x = i * CellW;
-        for (var j = 0; j <= rows - 1; j++) {
-            var y = j * CellH;
-            var cell = {
+    for (let i = 0; i <= cols - 1; i++) {
+        let x = i * CellW;
+        for (let j = 0; j <= rows - 1; j++) {
+            let y = j * CellH;
+            let cell = {
                 positionX: x,
                 positionY: y,
                 class: "",
@@ -41,56 +83,24 @@ function drawGrid() {
     ctx.strokeStyle = 'rgb(255, 255, 255)';
     ctx.fillStyle = "rgb(0, 0, 0)";
     ctx.lineWidth = 1;
-    for (var i = 0; i < grid.length; i++) {
-        var cell = grid[i];
-        var rect = new Path2D();
+    for (let i = 0; i < grid.length; i++) {
+        let cell = grid[i];
+        let rect = new Path2D();
         rect.rect(cell.positionX, cell.positionY, cell.width, cell.height);
         ctx.fill(rect);
         ctx.stroke(rect);
     }
 }
-window.addEventListener("keypress", function (_event) {
-    switch (_event.key) {
-        case "w":
-            if (snake[0].direction == "down") {
-            }
-            else {
-                snake[0].direction = "up";
-            }
-            break;
-        case "a":
-            if (snake[0].direction == "right") {
-            }
-            else {
-                snake[0].direction = "left";
-            }
-            break;
-        case "s":
-            if (snake[0].direction == "up") {
-            }
-            else {
-                snake[0].direction = "down";
-            }
-            break;
-        case "d":
-            if (snake[0].direction == "left") {
-            }
-            else {
-                snake[0].direction = "right";
-            }
-            break;
-    }
-});
 function generateSnake(length, startX, startY) {
-    for (var i = 0; i < length; i++) {
-        var posX = void 0;
-        var posY = void 0;
+    for (let i = 0; i < length; i++) {
+        let posX;
+        let posY;
         //scan the grid Array for the position for the snake Start
-        for (var j = 0; j < grid.length; j++) {
+        for (let j = 0; j < grid.length; j++) {
             if (snake.length <= length && grid[j].x == startX + snake.length && grid[j].y == startY) {
                 posX = grid[j].positionX;
                 posY = grid[j].positionY;
-                var cell = {
+                let cell = {
                     direction: "right",
                     positionX: posX,
                     positionY: posY,
@@ -107,9 +117,8 @@ function generateSnake(length, startX, startY) {
     snake[0].isTop = true;
 }
 function feedSnake() {
-    // Add a new segment at the same position as the tail
-    var tail = snake[snake.length - 1];
-    var newSegment = {
+    let tail = snake[snake.length - 1];
+    let newSegment = {
         direction: tail.direction,
         positionX: tail.positionX,
         positionY: tail.positionY,
@@ -122,15 +131,15 @@ function feedSnake() {
     snake.push(newSegment);
 }
 function drawSnake() {
-    for (var i = 0; i < snake.length; i++) {
-        var cell = snake[i];
-        var posX = 0;
-        var posY = 0;
+    for (let i = 0; i < snake.length; i++) {
+        let cell = snake[i];
+        let posX = 0;
+        let posY = 0;
         ctx.fillStyle = "rgb(81, 50, 31)";
         ctx.strokeStyle = "rgb(0, 0, 0)";
         ctx.lineWidth = 1;
-        var rect = new Path2D();
-        for (var j = 0; j < grid.length; j++) {
+        let rect = new Path2D();
+        for (let j = 0; j < grid.length; j++) {
             if (grid[j].x == cell.x && grid[j].y == cell.y) {
                 posX = grid[j].positionX;
                 posY = grid[j].positionY;
@@ -143,7 +152,7 @@ function drawSnake() {
 }
 function moveSnake() {
     // Move body
-    for (var i = snake.length - 1; i > 0; i--) {
+    for (let i = snake.length - 1; i > 0; i--) {
         snake[i].x = snake[i - 1].x;
         snake[i].y = snake[i - 1].y;
         snake[i].direction = snake[i - 1].direction;
@@ -164,8 +173,8 @@ function moveSnake() {
             break;
     }
     // Update positions
-    for (var i = 0; i < snake.length; i++) {
-        for (var j = 0; j < grid.length; j++) {
+    for (let i = 0; i < snake.length; i++) {
+        for (let j = 0; j < grid.length; j++) {
             if (grid[j].x == snake[i].x && grid[j].y == snake[i].y) {
                 snake[i].positionX = grid[j].positionX;
                 snake[i].positionY = grid[j].positionY;
@@ -174,9 +183,9 @@ function moveSnake() {
     }
 }
 function generateBounds() {
-    for (var i = 0; i < grid.length; i++) {
+    for (let i = 0; i < grid.length; i++) {
         if (grid[i].x == GridX - 1 || grid[i].x == 0 || grid[i].y == GridY - 1 || grid[i].y == 0) {
-            var cell = {
+            let cell = {
                 positionX: grid[i].positionX,
                 positionY: grid[i].positionY,
                 class: "",
@@ -189,20 +198,9 @@ function generateBounds() {
         }
     }
 }
-function drawBounds() {
-    ctx.fillStyle = "rgb(140, 99, 99)";
-    ctx.strokeStyle = "rgb(84, 84, 84)";
-    ctx.lineWidth = 3;
-    var rect = new Path2D();
-    for (var i = 0; i < Bounds.length; i++) {
-        rect.rect(Bounds[i].positionX, Bounds[i].positionY, Bounds[i].width, Bounds[i].height);
-        ctx.fill(rect);
-        ctx.stroke(rect);
-    }
-}
 function generateFood() {
-    var randIndex = Math.floor(Math.random() * grid.length - 1);
-    var food = {
+    let randIndex = Math.floor(Math.random() * grid.length - 1);
+    let food = {
         positionX: grid[randIndex].positionX,
         positionY: grid[randIndex].positionY,
         class: "",
@@ -214,8 +212,8 @@ function generateFood() {
     Food.push(food);
 }
 function addFood() {
-    var randIndex = Math.floor(Math.random() * grid.length - 1);
-    var food = {
+    let randIndex = Math.floor(Math.random() * grid.length - 1);
+    let food = {
         positionX: grid[randIndex].positionX,
         positionY: grid[randIndex].positionY,
         class: "",
@@ -230,20 +228,20 @@ function drawFood() {
     ctx.fillStyle = "rgb(189, 0, 0)";
     ctx.strokeStyle = "rgb(255, 224, 122)";
     ctx.lineWidth = CellH / 2;
-    var rect = new Path2D();
-    for (var i = 0; i < Food.length; i++) {
+    let rect = new Path2D();
+    for (let i = 0; i < Food.length; i++) {
         rect.rect(Food[i].positionX, Food[i].positionY, Food[i].width, Food[i].height);
         ctx.fill(rect);
         ctx.stroke(rect);
     }
 }
 function generateWalls(amount) {
-    for (var j = 0; j < amount; j++) {
-        var randIndex = Math.floor(Math.random() * grid.length);
-        var length_1 = Math.floor(Math.random() * 5 + 1);
-        var direction = [Math.round(Math.random()), Math.round(Math.random())];
-        for (var i = 0; i < length_1; i++) {
-            var wall = {
+    for (let j = 0; j < amount; j++) {
+        let randIndex = Math.floor(Math.random() * grid.length);
+        let length = Math.floor(Math.random() * 5 + 1);
+        let direction = [Math.round(Math.random()), Math.round(Math.random())];
+        for (let i = 0; i < length; i++) {
+            let wall = {
                 positionX: grid[randIndex].positionX + (direction[0] * i) * CellW,
                 positionY: grid[randIndex].positionY + (direction[1] * i) * CellH,
                 class: "",
@@ -256,23 +254,12 @@ function generateWalls(amount) {
         }
     }
 }
-function drawWalls() {
-    ctx.fillStyle = "rgb(140, 99, 99)";
-    ctx.strokeStyle = "rgb(84, 84, 84)";
-    ctx.lineWidth = 3;
-    var rect = new Path2D();
-    for (var i = 0; i < Walls.length; i++) {
-        rect.rect(Walls[i].positionX, Walls[i].positionY, Walls[i].width, Walls[i].height);
-        ctx.fill(rect);
-        ctx.stroke(rect);
-    }
-}
 function generateThief() {
-    var randIndex = Math.floor(Math.random() * grid.length);
-    var length = Math.floor(Math.random() * 5 + 1);
-    var direction = [Math.round(-1 + Math.random() * 2), Math.round(-1 + Math.random() * 2)];
-    for (var i = 0; i < length; i++) {
-        var cell = {
+    let randIndex = Math.floor(Math.random() * grid.length);
+    let length = Math.floor(Math.random() * 5 + 1);
+    let direction = [Math.round(-1 + Math.random() * 2), Math.round(-1 + Math.random() * 2)];
+    for (let i = 0; i < length; i++) {
+        let cell = {
             positionX: grid[randIndex].positionX + (direction[0] * i) * CellW,
             positionY: grid[randIndex].positionY + (direction[1] * i) * CellH,
             direction: direction,
@@ -286,18 +273,18 @@ function generateThief() {
 }
 function moveThief() {
     // Move body
-    for (var i = Thief.length - 1; i > 0; i--) {
+    for (let i = Thief.length - 1; i > 0; i--) {
         Thief[i].x = Thief[i - 1].x;
         Thief[i].y = Thief[i - 1].y;
         Thief[i].direction = Thief[i - 1].direction;
     }
     // Move head
-    var _a = Thief[0].direction, dx = _a[0], dy = _a[1];
+    const [dx, dy] = Thief[0].direction;
     Thief[0].x += dx;
     Thief[0].y += dy;
     // Update positions
-    for (var i = 0; i < Thief.length; i++) {
-        for (var j = 0; j < grid.length; j++) {
+    for (let i = 0; i < Thief.length; i++) {
+        for (let j = 0; j < grid.length; j++) {
             if (grid[j].x == Thief[i].x && grid[j].y == Thief[i].y) {
                 Thief[i].positionX = grid[j].positionX;
                 Thief[i].positionY = grid[j].positionY;
@@ -310,15 +297,15 @@ function moveThief() {
     }
 }
 function drawThief() {
-    for (var i = 0; i < Thief.length; i++) {
-        var cell = Thief[i];
-        var posX = 0;
-        var posY = 0;
+    for (let i = 0; i < Thief.length; i++) {
+        let cell = Thief[i];
+        let posX = 0;
+        let posY = 0;
         ctx.fillStyle = "rgb(81, 50, 31)";
         ctx.strokeStyle = "rgb(0, 0, 0)";
         ctx.lineWidth = 1;
-        var rect = new Path2D();
-        for (var j = 0; j < grid.length; j++) {
+        let rect = new Path2D();
+        for (let j = 0; j < grid.length; j++) {
             if (grid[j].x == cell.x && grid[j].y == cell.y) {
                 posX = grid[j].positionX;
                 posY = grid[j].positionY;
@@ -330,8 +317,8 @@ function drawThief() {
     }
 }
 function generateBlindFood() {
-    var randIndex = Math.floor(Math.random() * grid.length - 1);
-    var food = {
+    let randIndex = Math.floor(Math.random() * grid.length - 1);
+    let food = {
         positionX: grid[randIndex].positionX,
         positionY: grid[randIndex].positionY,
         class: "",
@@ -343,8 +330,8 @@ function generateBlindFood() {
     BlindFood.push(food);
 }
 function addBlindFood() {
-    var randIndex = Math.floor(Math.random() * grid.length - 1);
-    var food = {
+    let randIndex = Math.floor(Math.random() * grid.length);
+    let food = {
         positionX: grid[randIndex].positionX,
         positionY: grid[randIndex].positionY,
         class: "",
@@ -359,50 +346,115 @@ function drawBlindFood() {
     ctx.fillStyle = "rgb(189, 0, 0)";
     ctx.strokeStyle = "rgb(255, 224, 122)";
     ctx.lineWidth = CellH / 2;
-    var rect = new Path2D();
-    for (var i = 0; i < BlindFood.length; i++) {
+    let rect = new Path2D();
+    for (let i = 0; i < BlindFood.length; i++) {
         rect.rect(BlindFood[i].positionX, BlindFood[i].positionY, BlindFood[i].width, BlindFood[i].height);
         ctx.fill(rect);
         ctx.stroke(rect);
     }
 }
 function loadJumpscareImages() {
-    for (var i = 1; i <= 3; i++) {
-        var image = new Image();
-        image.src = "/textures/jumpscares/jumpscare" + i + ".png";
+    for (let i = 1; i <= 3; i++) {
+        let image = new Image();
+        image.src = `/textures/jumpscares/jumpscare${i}.png`;
         images.push(image);
     }
 }
 function jumpscare() {
-    var randomIndex = Math.floor(Math.random() * images.length);
+    let randomIndex = Math.floor(Math.random() * images.length);
     ctx.drawImage(images[randomIndex], 0, 0, canvas.width, canvas.height);
 }
-// function checkSelfCollision(): boolean {
-//     for (let i = 1; i < snake.length; i++) {
-//         if (snake[0].x === snake[i].x && snake[0].y === snake[i].y) {
-//             return true;
-//         }
-//     }
-//     return false;
-// }
-var viewDistance = 300;
-var bg = new Path2D();
-bg.rect(0, 0, canvas.width, canvas.height);
-ctx.fillStyle = "rgb(255, 255, 255)";
-ctx.fill(bg);
-var grid = [];
-var snake = [];
-var Bounds = [];
-var Food = [];
-var BlindFood = [];
-var Walls = [];
-var Thief = [];
-var images = [];
-var GridY = 40;
-var GridX = 40;
-var CellW = 27;
-var CellH = 27;
-//let selfCollide: boolean = false;
+function checkSelfCollision() {
+    for (let i = 1; i < snake.length; i++) {
+        if (snake[0].x === snake[i].x && snake[0].y === snake[i].y) {
+            return true;
+        }
+    }
+    return false;
+}
+function checkWallCollision() {
+    for (let wall of Walls) {
+        if (snake[0].x === wall.x && snake[0].y === wall.y) {
+            return true;
+        }
+    }
+    return false;
+}
+function checkBoundCollision() {
+    return snake[0].x < 0 || snake[0].x >= GridX || snake[0].y < 0 || snake[0].y >= GridY;
+}
+function gameOver() {
+    ctx.fillStyle = "rgba(0, 0, 0, 0.75)";
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    ctx.fillStyle = "white";
+    ctx.font = "48px Arial";
+    ctx.textAlign = "center";
+    ctx.fillText("Game Over", canvas.width / 2, canvas.height / 2);
+}
+function handleKeyPress(event) {
+    switch (event.key) {
+        case "ArrowUp":
+            if (snake[0].direction !== "down")
+                snake[0].direction = "up";
+            break;
+        case "ArrowDown":
+            if (snake[0].direction !== "up")
+                snake[0].direction = "down";
+            break;
+        case "ArrowLeft":
+            if (snake[0].direction !== "right")
+                snake[0].direction = "left";
+            break;
+        case "ArrowRight":
+            if (snake[0].direction !== "left")
+                snake[0].direction = "right";
+            break;
+    }
+}
+document.addEventListener("keydown", handleKeyPress);
+function animate() {
+    delay++;
+    if (delay == 20) {
+        if (viewDistance > 100) {
+            viewDistance -= 2;
+        }
+        if (checkBoundCollision() || checkSelfCollision() || checkWallCollision()) {
+            gameOver();
+            return;
+        }
+        delay = 0;
+        moveSnake();
+        moveThief();
+        // Check if snake's head collides with food
+        if (snake[0].x === Food[0].x && snake[0].y === Food[0].y) {
+            Food.pop();
+            addFood();
+            feedSnake();
+            viewDistance = 300;
+        }
+        if (snake[0].x === BlindFood[0].x && snake[0].y === BlindFood[0].y) {
+            BlindFood.pop();
+            addBlindFood();
+            feedSnake();
+            jumpscare();
+            viewDistance = 300;
+        }
+        // Clear the canvas
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        // Draw elements in the correct order
+        drawBackground();
+        drawGrid();
+        drawBounds();
+        drawWalls();
+        drawThief();
+        drawFood();
+        drawBlindFood();
+        drawSnake();
+        drawVignette();
+    }
+    requestAnimationFrame(animate);
+}
+// Initialize the game
 generateGrid(canvas.width, canvas.height, GridX, GridY);
 generateBounds();
 generateFood();
@@ -411,51 +463,5 @@ generateSnake(2, 5, 5);
 generateWalls(25);
 generateThief();
 loadJumpscareImages();
-var delay = 0;
-function animate() {
-    delay++;
-    if (delay == 20) {
-        if (viewDistance > 100) {
-            viewDistance -= 2;
-        }
-        //selfCollide = checkSelfCollision();
-        //check for wall collision -----------------------------------
-        if ( /*selfCollide ||*/snake[0].positionX < CellW || snake[0].positionX > CellW * (GridX - 1) || snake[0].positionY < CellH || snake[0].positionY > CellH * (GridY - 1)) {
-        }
-        else {
-            delay = 0;
-            moveSnake();
-            moveThief();
-            // Check if snake's head collides with food
-            if (snake[0].x === Food[0].x && snake[0].y === Food[0].y) {
-                Food.pop();
-                addFood();
-                feedSnake();
-                viewDistance = 300;
-            }
-            if (snake[0].x === BlindFood[0].x && snake[0].y === BlindFood[0].y) {
-                BlindFood.pop();
-                addBlindFood();
-                feedSnake();
-                jumpscare();
-                viewDistance = 300;
-            }
-            ctx.putImageData(imgData, 0, 0);
-            // drawGrid();
-            // drawBounds();
-            drawThief();
-            drawFood();
-            drawBlindFood();
-            drawSnake();
-            //drawVignette();
-        }
-    }
-    requestAnimationFrame(animate);
-}
-drawGrid();
-drawBounds();
-drawWalls();
-var imgData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+// Start the animation loop
 requestAnimationFrame(animate);
-console.log(grid);
-console.log(Bounds);
