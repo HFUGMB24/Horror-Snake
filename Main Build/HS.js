@@ -191,7 +191,7 @@ function drawBounds() {
     }
 }
 function checkPosValid(posX, posY) {
-    // Check if position is within bounds
+    // Check if position overlaps with bounds
     if (posX < CellW || posX >= CellW * (GridX - 1) || posY < CellH || posY >= CellH * (GridY - 1)) {
         return false;
     }
@@ -212,6 +212,7 @@ function checkPosValid(posX, posY) {
 function generateFood() {
     var validPosition = false;
     var randIndex = 0;
+    //generate a valid position
     while (!validPosition) {
         randIndex = Math.floor(Math.random() * grid.length);
         validPosition = checkPosValid(grid[randIndex].positionX, grid[randIndex].positionY);
@@ -230,6 +231,7 @@ function generateFood() {
 function addFood() {
     var validPosition = false;
     var randIndex = 0;
+    //generate a valid position
     while (!validPosition) {
         randIndex = Math.floor(Math.random() * grid.length);
         validPosition = checkPosValid(grid[randIndex].positionX, grid[randIndex].positionY);
@@ -257,6 +259,7 @@ function drawFood() {
     }
 }
 function generateWalls(amount) {
+    //generate n amount of walls with random orientation
     for (var j = 0; j < amount; j++) {
         var randIndex = Math.floor(Math.random() * grid.length);
         var length_1 = Math.floor(Math.random() * 5 + 1);
@@ -287,6 +290,7 @@ function drawWalls() {
     }
 }
 function generateThief() {
+    //generate a enemy snake with random length
     var randIndex = Math.floor(Math.random() * grid.length);
     var length = Math.floor(Math.random() * 5 + 1);
     var direction = [Math.round(-1 + Math.random() * 2), Math.round(-1 + Math.random() * 2)];
@@ -323,8 +327,8 @@ function moveThief() {
             }
         }
     }
-    // Optionally, change direction randomly
-    if (Math.random() < 0.1) { // 10% chance to change direction each move
+    //change direction randomly with 10% chance
+    if (Math.random() < 0.1) {
         Thief[0].direction = [Math.round(-1 + Math.random() * 2), Math.round(-1 + Math.random() * 2)];
     }
 }
@@ -422,6 +426,14 @@ function checkSelfCollision() {
     }
     return false;
 }
+function checkThiefCollision() {
+    for (var i = 1; i < Thief.length; i++) {
+        if (snake[0].x === Thief[i].x && snake[0].y === Thief[i].y) {
+            return true;
+        }
+    }
+    return false;
+}
 var viewDistance = 300;
 var bg = new Path2D();
 bg.rect(0, 0, canvas.width, canvas.height);
@@ -442,6 +454,7 @@ var CellH = 27;
 var checkIsValid = false;
 var selfCollide = false;
 var obstacleCollide = false;
+var thiefCollide = false;
 generateGrid(canvas.width, canvas.height, GridX, GridY);
 generateBounds();
 generateFood();
@@ -451,61 +464,20 @@ generateWalls(25);
 generateThief();
 loadJumpscareImages();
 var delay = 0;
-// function animate() {
-//     delay++
-//     if (delay == 20) {
-//         if (viewDistance > 100) {
-//             viewDistance -= 2;
-//         }
-//         selfCollide = checkSelfCollision();
-//         obstacleCollide = checkObstacleCollision();
-//         //check for wall collision -----------------------------------
-//         if (selfCollide || obstacleCollide || snake[0].positionX < CellW || snake[0].positionX >= CellW * (GridX - 1) || snake[0].positionY < CellH || snake[0].positionY >= CellH * (GridY - 1)) {
-//         } else {
-//             delay = 0;
-//             moveSnake();
-//             moveThief();
-//             // Check if snake's head collides with food
-//             if (snake[0].x === Food[0].x && snake[0].y === Food[0].y) {
-//                 Food.pop();
-//                 addFood();
-//                 feedSnake();
-//                 viewDistance = 300;
-//             }
-//             if (snake[0].x === BlindFood[0].x && snake[0].y === BlindFood[0].y) {
-//                 BlindFood.pop();
-//                 addBlindFood();
-//                 feedSnake();
-//                 jumpscare();
-//                 viewDistance = 300;
-//             }
-//             ctx.putImageData(imgData, 0, 0);
-//             // drawGrid();
-//             // drawBounds();
-//             drawThief();
-//             drawFood();
-//             drawBlindFood();
-//             drawSnake();
-//             //drawVignette();
-//         }
-//     }
-//     requestAnimationFrame(animate);
-// }
 function animate() {
     delay++;
     if (delay == 20) {
         if (viewDistance > 100) {
             viewDistance -= 2;
         }
-        // Move the snake first
         moveSnake();
         moveThief();
         // Then check for collisions
         selfCollide = checkSelfCollision();
         obstacleCollide = checkObstacleCollision();
-        if (selfCollide || obstacleCollide || snake[0].positionX < CellW || snake[0].positionX >= CellW * (GridX - 1) || snake[0].positionY < CellH || snake[0].positionY >= CellH * (GridY - 1)) {
-            // Handle collision (e.g., end game, reset snake)
-            console.log("Collision detected!");
+        thiefCollide = checkThiefCollision();
+        //handle collisions
+        if (thiefCollide || selfCollide || obstacleCollide || snake[0].positionX < CellW || snake[0].positionX >= CellW * (GridX - 1) || snake[0].positionY < CellH || snake[0].positionY >= CellH * (GridY - 1)) {
         }
         else {
             delay = 0;
@@ -524,7 +496,7 @@ function animate() {
                 viewDistance = 300;
             }
         }
-        // Redraw everything
+        //update canvas
         ctx.putImageData(imgData, 0, 0);
         drawThief();
         drawFood();
