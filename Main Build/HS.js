@@ -83,28 +83,18 @@ window.addEventListener("keypress", function (_event) {
 });
 function generateSnake(length, startX, startY) {
     for (var i = 0; i < length; i++) {
-        var posX = void 0;
-        var posY = void 0;
-        //scan the grid Array for the position for the snake Start
-        for (var j = 0; j < grid.length; j++) {
-            if (snake.length <= length && grid[j].x == startX + snake.length && grid[j].y == startY) {
-                posX = grid[j].positionX;
-                posY = grid[j].positionY;
-                var cell = {
-                    direction: "right",
-                    positionX: posX,
-                    positionY: posY,
-                    height: CellH,
-                    width: CellW,
-                    isTop: false,
-                    x: grid[j].x - i,
-                    y: grid[j].y
-                };
-                snake.push(cell);
-            }
-        }
+        var cell = {
+            direction: "right",
+            positionX: (startX - i) * CellW,
+            positionY: startY * CellH,
+            height: CellH,
+            width: CellW,
+            isTop: i === 0,
+            x: startX - i,
+            y: startY
+        };
+        snake.push(cell);
     }
-    snake[0].isTop = true;
 }
 function feedSnake() {
     // Add a new segment at the same position as the tail
@@ -461,21 +451,64 @@ generateWalls(25);
 generateThief();
 loadJumpscareImages();
 var delay = 0;
+// function animate() {
+//     delay++
+//     if (delay == 20) {
+//         if (viewDistance > 100) {
+//             viewDistance -= 2;
+//         }
+//         selfCollide = checkSelfCollision();
+//         obstacleCollide = checkObstacleCollision();
+//         //check for wall collision -----------------------------------
+//         if (selfCollide || obstacleCollide || snake[0].positionX < CellW || snake[0].positionX >= CellW * (GridX - 1) || snake[0].positionY < CellH || snake[0].positionY >= CellH * (GridY - 1)) {
+//         } else {
+//             delay = 0;
+//             moveSnake();
+//             moveThief();
+//             // Check if snake's head collides with food
+//             if (snake[0].x === Food[0].x && snake[0].y === Food[0].y) {
+//                 Food.pop();
+//                 addFood();
+//                 feedSnake();
+//                 viewDistance = 300;
+//             }
+//             if (snake[0].x === BlindFood[0].x && snake[0].y === BlindFood[0].y) {
+//                 BlindFood.pop();
+//                 addBlindFood();
+//                 feedSnake();
+//                 jumpscare();
+//                 viewDistance = 300;
+//             }
+//             ctx.putImageData(imgData, 0, 0);
+//             // drawGrid();
+//             // drawBounds();
+//             drawThief();
+//             drawFood();
+//             drawBlindFood();
+//             drawSnake();
+//             //drawVignette();
+//         }
+//     }
+//     requestAnimationFrame(animate);
+// }
 function animate() {
     delay++;
     if (delay == 20) {
         if (viewDistance > 100) {
             viewDistance -= 2;
         }
-        //selfCollide = checkSelfCollision();
+        // Move the snake first
+        moveSnake();
+        moveThief();
+        // Then check for collisions
+        selfCollide = checkSelfCollision();
         obstacleCollide = checkObstacleCollision();
-        //check for wall collision -----------------------------------
-        if (obstacleCollide || snake[0].positionX < CellW || snake[0].positionX >= CellW * (GridX - 1) || snake[0].positionY < CellH || snake[0].positionY >= CellH * (GridY - 1)) {
+        if (selfCollide || obstacleCollide || snake[0].positionX < CellW || snake[0].positionX >= CellW * (GridX - 1) || snake[0].positionY < CellH || snake[0].positionY >= CellH * (GridY - 1)) {
+            // Handle collision (e.g., end game, reset snake)
+            console.log("Collision detected!");
         }
         else {
             delay = 0;
-            moveSnake();
-            moveThief();
             // Check if snake's head collides with food
             if (snake[0].x === Food[0].x && snake[0].y === Food[0].y) {
                 Food.pop();
@@ -490,15 +523,13 @@ function animate() {
                 jumpscare();
                 viewDistance = 300;
             }
-            ctx.putImageData(imgData, 0, 0);
-            // drawGrid();
-            // drawBounds();
-            drawThief();
-            drawFood();
-            drawBlindFood();
-            drawSnake();
-            //drawVignette();
         }
+        // Redraw everything
+        ctx.putImageData(imgData, 0, 0);
+        drawThief();
+        drawFood();
+        drawBlindFood();
+        drawSnake();
     }
     requestAnimationFrame(animate);
 }
