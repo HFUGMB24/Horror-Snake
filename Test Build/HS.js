@@ -471,16 +471,50 @@ function addBlindFood() {
     };
     BlindFood.push(food);
 }
+//function drawBlindFood() {
+//
+//    ctx.fillStyle = "rgb(189, 0, 0)";
+//    ctx.strokeStyle = "rgb(255, 224, 122)";
+//    ctx.lineWidth = CellH / 2;
+//
+//    let rect: Path2D = new Path2D();
+//
+//    for (let i = 0; i < BlindFood.length; i++) {
+//        rect.rect(BlindFood[i].positionX, BlindFood[i].positionY, BlindFood[i].width, BlindFood[i].height);
+//
+//        ctx.fill(rect);
+//        ctx.stroke(rect);
+//    }
+//}
 function drawBlindFood() {
-    ctx.fillStyle = "rgb(189, 0, 0)";
-    ctx.strokeStyle = "rgb(255, 224, 122)";
-    ctx.lineWidth = CellH / 2;
-    let rect = new Path2D();
-    for (let i = 0; i < BlindFood.length; i++) {
-        rect.rect(BlindFood[i].positionX, BlindFood[i].positionY, BlindFood[i].width, BlindFood[i].height);
-        ctx.fill(rect);
-        ctx.stroke(rect);
+    const flash1 = new Image();
+    const blind2 = new Image();
+    const blind3 = new Image();
+    flash1.src = 'textures/food/flash1.png';
+    blind2.src = 'textures/food/blind2.png';
+    blind3.src = 'textures/food/blind3.png';
+    const images = [flash1, blind2, blind3, blind2];
+    let currentImageIndex = 0;
+    let lastSwitchTime = Date.now();
+    function animateBlindFood() {
+        const currentTime = Date.now();
+        if (currentTime - lastSwitchTime >= 250) {
+            currentImageIndex = (currentImageIndex + 1) % images.length;
+            lastSwitchTime = currentTime;
+        }
+        const currentImage = images[currentImageIndex];
+        for (let i = 0; i < BlindFood.length; i++) {
+            ctx.drawImage(currentImage, BlindFood[i].positionX, BlindFood[i].positionY, BlindFood[i].width, BlindFood[i].height);
+        }
+        requestAnimationFrame(animateBlindFood);
     }
+    Promise.all([
+        new Promise(resolve => flash1.onload = resolve),
+        new Promise(resolve => blind2.onload = resolve),
+        new Promise(resolve => blind3.onload = resolve)
+    ]).then(() => {
+        animateBlindFood();
+    });
 }
 function loadJumpscareImages() {
     for (let i = 1; i <= 3; i++) {
@@ -543,6 +577,7 @@ generateBounds();
 generateFood();
 drawFood();
 generateBlindFood();
+drawBlindFood();
 generateSnake(2, 5, 5);
 generateWalls(25);
 generateThief();
@@ -583,7 +618,6 @@ function animate() {
         //update canvas
         ctx.putImageData(imgData, 0, 0);
         drawThief();
-        drawBlindFood();
         drawSnake();
     }
     requestAnimationFrame(animate);
