@@ -26,4 +26,4 @@ fetch("./sounds/theme_loop.wav")
         playSound.start(ctx.currentTime);
     }
 
-    window.addEventListener("mousedown", playback);
+   // window.addEventListener("mousedown", playback);
