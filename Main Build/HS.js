@@ -1,13 +1,52 @@
-var canvas = document.getElementsByTagName("canvas")[0];
-var ctx = canvas.getContext("2d");
+"use strict";
+const canvas = document.getElementsByTagName("canvas")[0];
+const ctx = canvas.getContext("2d");
+class SoundManager {
+    constructor() {
+        this.sounds = {};
+        this.loadSounds();
+    }
+    loadSounds() {
+        this.sounds['eat'] = new Audio('sounds/eat.wav');
+        this.sounds['death'] = new Audio('sounds/death.wav');
+        this.sounds['damage'] = new Audio('sounds/damage.wav');
+        this.sounds['gameover'] = new Audio('sounds/gameover.wav');
+        this.sounds['ghost'] = new Audio('sounds/ghost.wav');
+        this.sounds['light'] = new Audio('sounds/light.wav');
+        this.sounds['reset'] = new Audio('sounds/reset.wav');
+        this.sounds['slow'] = new Audio('sounds/slow.wav');
+        this.sounds['speed'] = new Audio('sounds/speed.wav');
+        this.sounds['thunder'] = new Audio('sounds/thunder.wav');
+        this.sounds['ambience_loop'] = new Audio('ambience_loop.wav');
+        this.sounds['theme_loop'] = new Audio('theme_loop.wav');
+        //HIER ALLE SOUNDS
+    }
+    play(sound) {
+        if (this.sounds[sound]) {
+            this.sounds[sound].play();
+        }
+        else {
+            console.warn(`Sound "${sound}" not found.`);
+        }
+    }
+    setVolume(sound, volume) {
+        if (this.sounds[sound]) {
+            this.sounds[sound].volume = volume;
+        }
+        else {
+            console.warn(`Sound "${sound}" not found.`);
+        }
+    }
+}
+const soundManager = new SoundManager();
 function drawVignette() {
     //draw light
     ctx.globalCompositeOperation = "lighten";
-    var gradient = ctx.createRadialGradient(snake[0].positionX + CellW / 2, snake[0].positionY + CellH / 2, 0, snake[0].positionX + CellW / 2, snake[0].positionY + CellH / 2, viewDistance);
+    let gradient = ctx.createRadialGradient(snake[0].positionX + CellW / 2, snake[0].positionY + CellH / 2, 0, snake[0].positionX + CellW / 2, snake[0].positionY + CellH / 2, viewDistance);
     gradient.addColorStop(0, "rgba(226, 216, 182, 0.8)");
     gradient.addColorStop(1, "rgba(0, 0, 0, 1)");
     ctx.fillStyle = gradient;
-    var vignette = new Path2D();
+    let vignette = new Path2D();
     vignette.rect(0, 0, canvas.width, canvas.height);
     ctx.fill(vignette);
     //draw darkness
@@ -20,11 +59,11 @@ function drawVignette() {
     ctx.fill(vignette);
 }
 function generateGrid(width, height, rows, cols) {
-    for (var i = 0; i <= cols - 1; i++) {
-        var x = i * CellW;
-        for (var j = 0; j <= rows - 1; j++) {
-            var y = j * CellH;
-            var cell = {
+    for (let i = 0; i <= cols - 1; i++) {
+        let x = i * CellW;
+        for (let j = 0; j <= rows - 1; j++) {
+            let y = j * CellH;
+            let cell = {
                 positionX: x,
                 positionY: y,
                 class: "",
@@ -37,19 +76,29 @@ function generateGrid(width, height, rows, cols) {
         }
     }
 }
-function drawGrid() {
-    ctx.strokeStyle = 'rgb(255, 255, 255)';
-    ctx.fillStyle = "rgb(0, 0, 0)";
-    ctx.lineWidth = 1;
-    for (var i = 0; i < grid.length; i++) {
-        var cell = grid[i];
-        var rect = new Path2D();
-        rect.rect(cell.positionX, cell.positionY, cell.width, cell.height);
-        ctx.fill(rect);
-        ctx.stroke(rect);
-    }
+//function drawGrid() {
+//    ctx.strokeStyle = 'rgb(255, 255, 255)';
+//    ctx.fillStyle = "rgb(0, 0, 0)"
+//    ctx.lineWidth = 1;
+//
+//    for (let i = 0; i < grid.length; i++) {
+//        let cell = grid[i];
+//
+//        let rect: Path2D = new Path2D()
+//        rect.rect(cell.positionX, cell.positionY, cell.width, cell.height);
+//
+//        ctx.fill(rect)
+//        ctx.stroke(rect)
+//    }
+//}
+function drawBackground() {
+    const backgroundImage = new Image();
+    backgroundImage.src = 'textures/level/background.png';
+    backgroundImage.onload = () => {
+        ctx.drawImage(backgroundImage, 0, 0, canvas.width, canvas.height);
+    };
 }
-window.addEventListener("keypress", function (_event) {
+window.addEventListener("keypress", _event => {
     switch (_event.key) {
         case "w":
             if (snake[0].direction == "down") {
@@ -82,8 +131,8 @@ window.addEventListener("keypress", function (_event) {
     }
 });
 function generateSnake(length, startX, startY) {
-    for (var i = 0; i < length; i++) {
-        var cell = {
+    for (let i = 0; i < length; i++) {
+        let cell = {
             direction: "right",
             positionX: (startX - i) * CellW,
             positionY: startY * CellH,
@@ -98,8 +147,8 @@ function generateSnake(length, startX, startY) {
 }
 function feedSnake() {
     // Add a new segment at the same position as the tail
-    var tail = snake[snake.length - 1];
-    var newSegment = {
+    let tail = snake[snake.length - 1];
+    let newSegment = {
         direction: tail.direction,
         positionX: tail.positionX,
         positionY: tail.positionY,
@@ -112,15 +161,15 @@ function feedSnake() {
     snake.push(newSegment);
 }
 function drawSnake() {
-    for (var i = 0; i < snake.length; i++) {
-        var cell = snake[i];
-        var posX = 0;
-        var posY = 0;
+    for (let i = 0; i < snake.length; i++) {
+        let cell = snake[i];
+        let posX = 0;
+        let posY = 0;
         ctx.fillStyle = "rgb(81, 50, 31)";
         ctx.strokeStyle = "rgb(0, 0, 0)";
         ctx.lineWidth = 1;
-        var rect = new Path2D();
-        for (var j = 0; j < grid.length; j++) {
+        let rect = new Path2D();
+        for (let j = 0; j < grid.length; j++) {
             if (grid[j].x == cell.x && grid[j].y == cell.y) {
                 posX = grid[j].positionX;
                 posY = grid[j].positionY;
@@ -133,7 +182,7 @@ function drawSnake() {
 }
 function moveSnake() {
     // Move body
-    for (var i = snake.length - 1; i > 0; i--) {
+    for (let i = snake.length - 1; i > 0; i--) {
         snake[i].x = snake[i - 1].x;
         snake[i].y = snake[i - 1].y;
         snake[i].direction = snake[i - 1].direction;
@@ -154,8 +203,8 @@ function moveSnake() {
             break;
     }
     // Update positions
-    for (var i = 0; i < snake.length; i++) {
-        for (var j = 0; j < grid.length; j++) {
+    for (let i = 0; i < snake.length; i++) {
+        for (let j = 0; j < grid.length; j++) {
             if (grid[j].x == snake[i].x && grid[j].y == snake[i].y) {
                 snake[i].positionX = grid[j].positionX;
                 snake[i].positionY = grid[j].positionY;
@@ -164,9 +213,9 @@ function moveSnake() {
     }
 }
 function generateBounds() {
-    for (var i = 0; i < grid.length; i++) {
+    for (let i = 0; i < grid.length; i++) {
         if (grid[i].x == GridX - 1 || grid[i].x == 0 || grid[i].y == GridY - 1 || grid[i].y == 0) {
-            var cell = {
+            let cell = {
                 positionX: grid[i].positionX,
                 positionY: grid[i].positionY,
                 class: "",
@@ -183,8 +232,8 @@ function drawBounds() {
     ctx.fillStyle = "rgb(140, 99, 99)";
     ctx.strokeStyle = "rgb(84, 84, 84)";
     ctx.lineWidth = 3;
-    var rect = new Path2D();
-    for (var i = 0; i < Bounds.length; i++) {
+    let rect = new Path2D();
+    for (let i = 0; i < Bounds.length; i++) {
         rect.rect(Bounds[i].positionX, Bounds[i].positionY, Bounds[i].width, Bounds[i].height);
         ctx.fill(rect);
         ctx.stroke(rect);
@@ -196,13 +245,13 @@ function checkPosValid(posX, posY) {
         return false;
     }
     // Check if position overlaps with walls
-    for (var i = 0; i < Walls.length; i++) {
+    for (let i = 0; i < Walls.length; i++) {
         if (posX === Walls[i].positionX && posY === Walls[i].positionY) {
             return false;
         }
     }
     // Check if position overlaps with snake
-    for (var i = 0; i < snake.length; i++) {
+    for (let i = 0; i < snake.length; i++) {
         if (posX === snake[i].positionX && posY === snake[i].positionY) {
             return false;
         }
@@ -210,14 +259,14 @@ function checkPosValid(posX, posY) {
     return true;
 }
 function generateFood() {
-    var validPosition = false;
-    var randIndex = 0;
+    let validPosition = false;
+    let randIndex = 0;
     //generate a valid position
     while (!validPosition) {
         randIndex = Math.floor(Math.random() * grid.length);
         validPosition = checkPosValid(grid[randIndex].positionX, grid[randIndex].positionY);
     }
-    var food = {
+    let food = {
         positionX: grid[randIndex].positionX,
         positionY: grid[randIndex].positionY,
         class: "",
@@ -229,14 +278,14 @@ function generateFood() {
     Food.push(food);
 }
 function addFood() {
-    var validPosition = false;
-    var randIndex = 0;
+    let validPosition = false;
+    let randIndex = 0;
     //generate a valid position
     while (!validPosition) {
         randIndex = Math.floor(Math.random() * grid.length);
         validPosition = checkPosValid(grid[randIndex].positionX, grid[randIndex].positionY);
     }
-    var food = {
+    let food = {
         positionX: grid[randIndex].positionX,
         positionY: grid[randIndex].positionY,
         class: "",
@@ -247,25 +296,52 @@ function addFood() {
     };
     Food.push(food);
 }
+//function drawFood() {
+//
+//    ctx.fillStyle = "rgb(189, 0, 0)";
+//    ctx.strokeStyle = "rgb(255, 224, 122)";
+//    ctx.lineWidth = CellH / 2;
+//
+//    let rect: Path2D = new Path2D();
+//
+//   for (let i = 0; i < Food.length; i++) {
+//        rect.rect(Food[i].positionX, Food[i].positionY, Food[i].width, Food[i].height);
+//
+//        ctx.fill(rect);
+//        ctx.stroke(rect);
+//    }
+//}
 function drawFood() {
-    ctx.fillStyle = "rgb(189, 0, 0)";
-    ctx.strokeStyle = "rgb(255, 224, 122)";
-    ctx.lineWidth = CellH / 2;
-    var rect = new Path2D();
-    for (var i = 0; i < Food.length; i++) {
-        rect.rect(Food[i].positionX, Food[i].positionY, Food[i].width, Food[i].height);
-        ctx.fill(rect);
-        ctx.stroke(rect);
+    const rabbit1 = new Image();
+    const rabbit2 = new Image();
+    rabbit1.src = 'textures/food/rabbit1.png';
+    rabbit2.src = 'textures/food/rabbit2.png';
+    let currentImage = rabbit1;
+    let lastSwitchTime = Date.now();
+    function animateFood() {
+        const currentTime = Date.now();
+        if (currentTime - lastSwitchTime >= 500) {
+            currentImage = currentImage === rabbit1 ? rabbit2 : rabbit1;
+            lastSwitchTime = currentTime;
+        }
+        ctx.imageSmoothingEnabled = false;
+        for (let i = 0; i < Food.length; i++) {
+            ctx.drawImage(currentImage, 0, 0, currentImage.width, currentImage.height, Food[i].positionX, Food[i].positionY, Food[i].width, Food[i].height);
+        }
+        requestAnimationFrame(animateFood);
     }
+    rabbit1.onload = rabbit2.onload = () => {
+        animateFood();
+    };
 }
 function generateWalls(amount) {
     //generate n amount of walls with random orientation
-    for (var j = 0; j < amount; j++) {
-        var randIndex = Math.floor(Math.random() * grid.length);
-        var length_1 = Math.floor(Math.random() * 5 + 1);
-        var direction = [Math.round(Math.random()), Math.round(Math.random())];
-        for (var i = 0; i < length_1; i++) {
-            var wall = {
+    for (let j = 0; j < amount; j++) {
+        let randIndex = Math.floor(Math.random() * grid.length);
+        let length = Math.floor(Math.random() * 5 + 1);
+        let direction = [Math.round(Math.random()), Math.round(Math.random())];
+        for (let i = 0; i < length; i++) {
+            let wall = {
                 positionX: grid[randIndex].positionX + (direction[0] * i) * CellW,
                 positionY: grid[randIndex].positionY + (direction[1] * i) * CellH,
                 class: "",
@@ -278,24 +354,44 @@ function generateWalls(amount) {
         }
     }
 }
+//function drawWalls() {
+//    ctx.fillStyle = "rgb(140, 99, 99)";
+//   ctx.strokeStyle = "rgb(84, 84, 84)";
+//    ctx.lineWidth = 3;
+//
+//    let rect: Path2D = new Path2D()
+//
+//   for (let i = 0; i < Walls.length; i++) {
+//
+//        rect.rect(Walls[i].positionX, Walls[i].positionY, Walls[i].width, Walls[i].height);
+//
+//        ctx.fill(rect);
+//       ctx.stroke(rect);
+//    }
+//}
 function drawWalls() {
-    ctx.fillStyle = "rgb(140, 99, 99)";
-    ctx.strokeStyle = "rgb(84, 84, 84)";
-    ctx.lineWidth = 3;
-    var rect = new Path2D();
-    for (var i = 0; i < Walls.length; i++) {
-        rect.rect(Walls[i].positionX, Walls[i].positionY, Walls[i].width, Walls[i].height);
-        ctx.fill(rect);
-        ctx.stroke(rect);
-    }
+    const wallShadowImage = new Image(0);
+    const wallImage = new Image();
+    wallShadowImage.src = 'textures/level/wallshadow.png';
+    wallImage.src = 'textures/level/wall.png';
+    wallShadowImage.onload = () => {
+        for (let i = 0; i < Walls.length; i++) {
+            ctx.drawImage(wallShadowImage, Walls[i].positionX, Walls[i].positionY, Walls[i].width, Walls[i].height);
+        }
+        wallImage.onload = () => {
+            for (let i = 0; i < Walls.length; i++) {
+                ctx.drawImage(wallImage, Walls[i].positionX, Walls[i].positionY, Walls[i].width, Walls[i].height);
+            }
+        };
+    };
 }
 function generateThief() {
     //generate a enemy snake with random length
-    var randIndex = Math.floor(Math.random() * grid.length);
-    var length = Math.floor(Math.random() * 5 + 1);
-    var direction = [Math.round(-1 + Math.random() * 2), Math.round(-1 + Math.random() * 2)];
-    for (var i = 0; i < length; i++) {
-        var cell = {
+    let randIndex = Math.floor(Math.random() * grid.length);
+    let length = Math.floor(Math.random() * 5 + 1);
+    let direction = [Math.round(-1 + Math.random() * 2), Math.round(-1 + Math.random() * 2)];
+    for (let i = 0; i < length; i++) {
+        let cell = {
             positionX: grid[randIndex].positionX + (direction[0] * i) * CellW,
             positionY: grid[randIndex].positionY + (direction[1] * i) * CellH,
             direction: direction,
@@ -309,18 +405,18 @@ function generateThief() {
 }
 function moveThief() {
     // Move body
-    for (var i = Thief.length - 1; i > 0; i--) {
+    for (let i = Thief.length - 1; i > 0; i--) {
         Thief[i].x = Thief[i - 1].x;
         Thief[i].y = Thief[i - 1].y;
         Thief[i].direction = Thief[i - 1].direction;
     }
     // Move head
-    var _a = Thief[0].direction, dx = _a[0], dy = _a[1];
+    const [dx, dy] = Thief[0].direction;
     Thief[0].x += dx;
     Thief[0].y += dy;
     // Update positions
-    for (var i = 0; i < Thief.length; i++) {
-        for (var j = 0; j < grid.length; j++) {
+    for (let i = 0; i < Thief.length; i++) {
+        for (let j = 0; j < grid.length; j++) {
             if (grid[j].x == Thief[i].x && grid[j].y == Thief[i].y) {
                 Thief[i].positionX = grid[j].positionX;
                 Thief[i].positionY = grid[j].positionY;
@@ -333,15 +429,15 @@ function moveThief() {
     }
 }
 function drawThief() {
-    for (var i = 0; i < Thief.length; i++) {
-        var cell = Thief[i];
-        var posX = 0;
-        var posY = 0;
+    for (let i = 0; i < Thief.length; i++) {
+        let cell = Thief[i];
+        let posX = 0;
+        let posY = 0;
         ctx.fillStyle = "rgb(81, 50, 31)";
         ctx.strokeStyle = "rgb(0, 0, 0)";
         ctx.lineWidth = 1;
-        var rect = new Path2D();
-        for (var j = 0; j < grid.length; j++) {
+        let rect = new Path2D();
+        for (let j = 0; j < grid.length; j++) {
             if (grid[j].x == cell.x && grid[j].y == cell.y) {
                 posX = grid[j].positionX;
                 posY = grid[j].positionY;
@@ -353,13 +449,13 @@ function drawThief() {
     }
 }
 function generateBlindFood() {
-    var validPosition = false;
-    var randIndex = 0;
+    let validPosition = false;
+    let randIndex = 0;
     while (!validPosition) {
         randIndex = Math.floor(Math.random() * grid.length);
         validPosition = checkPosValid(grid[randIndex].positionX, grid[randIndex].positionY);
     }
-    var food = {
+    let food = {
         positionX: grid[randIndex].positionX,
         positionY: grid[randIndex].positionY,
         class: "",
@@ -371,13 +467,13 @@ function generateBlindFood() {
     BlindFood.push(food);
 }
 function addBlindFood() {
-    var validPosition = false;
-    var randIndex = 0;
+    let validPosition = false;
+    let randIndex = 0;
     while (!validPosition) {
         randIndex = Math.floor(Math.random() * grid.length);
         validPosition = checkPosValid(grid[randIndex].positionX, grid[randIndex].positionY);
     }
-    var food = {
+    let food = {
         positionX: grid[randIndex].positionX,
         positionY: grid[randIndex].positionY,
         class: "",
@@ -388,30 +484,69 @@ function addBlindFood() {
     };
     BlindFood.push(food);
 }
+//function drawBlindFood() {
+//
+//    ctx.fillStyle = "rgb(189, 0, 0)";
+//    ctx.strokeStyle = "rgb(255, 224, 122)";
+//    ctx.lineWidth = CellH / 2;
+//
+//    let rect: Path2D = new Path2D();
+//
+//    for (let i = 0; i < BlindFood.length; i++) {
+//        rect.rect(BlindFood[i].positionX, BlindFood[i].positionY, BlindFood[i].width, BlindFood[i].height);
+//
+//        ctx.fill(rect);
+//        ctx.stroke(rect);
+//    }
+//}
 function drawBlindFood() {
-    ctx.fillStyle = "rgb(189, 0, 0)";
-    ctx.strokeStyle = "rgb(255, 224, 122)";
-    ctx.lineWidth = CellH / 2;
-    var rect = new Path2D();
-    for (var i = 0; i < BlindFood.length; i++) {
-        rect.rect(BlindFood[i].positionX, BlindFood[i].positionY, BlindFood[i].width, BlindFood[i].height);
-        ctx.fill(rect);
-        ctx.stroke(rect);
+    const flash1 = new Image();
+    const blind2 = new Image();
+    const blind3 = new Image();
+    flash1.src = 'textures/food/flash1.png';
+    blind2.src = 'textures/food/blind2.png';
+    blind3.src = 'textures/food/blind3.png';
+    const images = [flash1, blind2, blind3, blind2];
+    let currentImageIndex = 0;
+    let lastSwitchTime = Date.now();
+    function animateBlindFood() {
+        const currentTime = Date.now();
+        if (currentTime - lastSwitchTime >= 250) {
+            currentImageIndex = (currentImageIndex + 1) % images.length;
+            lastSwitchTime = currentTime;
+        }
+        const currentImage = images[currentImageIndex];
+        // Disable image smoothing
+        ctx.imageSmoothingEnabled = false;
+        for (let i = 0; i < BlindFood.length; i++) {
+            // Draw the image using all 9 arguments of drawImage
+            ctx.drawImage(currentImage, 0, 0, currentImage.width, currentImage.height, // Source rectangle
+            BlindFood[i].positionX, BlindFood[i].positionY, BlindFood[i].width, BlindFood[i].height // Destination rectangle
+            );
+        }
+        requestAnimationFrame(animateBlindFood);
     }
+    Promise.all([
+        new Promise(resolve => flash1.onload = resolve),
+        new Promise(resolve => blind2.onload = resolve),
+        new Promise(resolve => blind3.onload = resolve)
+    ]).then(() => {
+        animateBlindFood();
+    });
 }
 function loadJumpscareImages() {
-    for (var i = 1; i <= 3; i++) {
-        var image = new Image();
+    for (let i = 1; i <= 3; i++) {
+        let image = new Image();
         image.src = "/textures/jumpscares/jumpscare" + i + ".png";
         images.push(image);
     }
 }
 function jumpscare() {
-    var randomIndex = Math.floor(Math.random() * images.length);
+    let randomIndex = Math.floor(Math.random() * images.length);
     ctx.drawImage(images[randomIndex], 0, 0, canvas.width, canvas.height);
 }
 function checkObstacleCollision() {
-    for (var i = 0; i < Walls.length; i++) {
+    for (let i = 0; i < Walls.length; i++) {
         if (snake[0].x === Walls[i].x && snake[0].y === Walls[i].y) {
             return true;
         }
@@ -419,7 +554,7 @@ function checkObstacleCollision() {
     return false;
 }
 function checkSelfCollision() {
-    for (var i = 1; i < snake.length; i++) {
+    for (let i = 1; i < snake.length; i++) {
         if (snake[0].x === snake[i].x && snake[0].y === snake[i].y) {
             return true;
         }
@@ -427,43 +562,45 @@ function checkSelfCollision() {
     return false;
 }
 function checkThiefCollision() {
-    for (var i = 1; i < Thief.length; i++) {
+    for (let i = 1; i < Thief.length; i++) {
         if (snake[0].x === Thief[i].x && snake[0].y === Thief[i].y) {
             return true;
         }
     }
     return false;
 }
-var viewDistance = 300;
-var bg = new Path2D();
+let viewDistance = 300;
+let bg = new Path2D();
 bg.rect(0, 0, canvas.width, canvas.height);
 ctx.fillStyle = "rgb(255, 255, 255)";
 ctx.fill(bg);
-var grid = [];
-var snake = [];
-var Bounds = [];
-var Food = [];
-var BlindFood = [];
-var Walls = [];
-var Thief = [];
-var images = [];
-var GridY = 40;
-var GridX = 40;
-var CellW = 27;
-var CellH = 27;
-var checkIsValid = false;
-var selfCollide = false;
-var obstacleCollide = false;
-var thiefCollide = false;
+let grid = [];
+let snake = [];
+let Bounds = [];
+let Food = [];
+let BlindFood = [];
+let Walls = [];
+let Thief = [];
+let images = [];
+let GridY = 40;
+let GridX = 40;
+let CellW = 27;
+let CellH = 27;
+let checkIsValid = false;
+let selfCollide = false;
+let obstacleCollide = false;
+let thiefCollide = false;
 generateGrid(canvas.width, canvas.height, GridX, GridY);
 generateBounds();
 generateFood();
+drawFood();
 generateBlindFood();
+drawBlindFood();
 generateSnake(2, 5, 5);
 generateWalls(25);
 generateThief();
 loadJumpscareImages();
-var delay = 0;
+let delay = 0;
 function animate() {
     delay++;
     if (delay == 20) {
@@ -478,6 +615,8 @@ function animate() {
         thiefCollide = checkThiefCollision();
         //handle collisions
         if (thiefCollide || selfCollide || obstacleCollide || snake[0].positionX < CellW || snake[0].positionX >= CellW * (GridX - 1) || snake[0].positionY < CellH || snake[0].positionY >= CellH * (GridY - 1)) {
+            soundManager.play('gameover');
+            soundManager.setVolume('gameover', 0.5);
         }
         else {
             delay = 0;
@@ -487,6 +626,8 @@ function animate() {
                 addFood();
                 feedSnake();
                 viewDistance = 300;
+                soundManager.play('eat');
+                soundManager.setVolume('eat', 0.5);
             }
             if (snake[0].x === BlindFood[0].x && snake[0].y === BlindFood[0].y) {
                 BlindFood.pop();
@@ -494,21 +635,23 @@ function animate() {
                 feedSnake();
                 jumpscare();
                 viewDistance = 300;
+                soundManager.play('thunder');
+                soundManager.setVolume('thunder', 1);
             }
         }
         //update canvas
         ctx.putImageData(imgData, 0, 0);
         drawThief();
-        drawFood();
-        drawBlindFood();
         drawSnake();
+        drawVignette();
     }
     requestAnimationFrame(animate);
 }
-drawGrid();
+//drawGrid();
+drawBackground();
 drawBounds();
 drawWalls();
-var imgData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+let imgData = ctx.getImageData(0, 0, canvas.width, canvas.height);
 requestAnimationFrame(animate);
 console.log(grid);
 console.log(Bounds);
