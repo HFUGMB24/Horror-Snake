@@ -1,6 +1,32 @@
 "use strict";
 const canvas = document.getElementsByTagName("canvas")[0];
 const ctx = canvas.getContext("2d");
+{
+    const ctx = new (window.AudioContext || window.AudioContext)();
+    let audio;
+    fetch("./sounds/damage.wav");
+    fetch("./sounds/eat.wav");
+    fetch("./sounds/gameover.wav");
+    fetch("./sounds/ghost.wav");
+    fetch("./sounds/light.wav");
+    fetch("./sounds/reset.wav");
+    fetch("./sounds/slow.wav");
+    fetch("./sounds/speed.wav");
+    fetch("./sounds/thunder.wav");
+    fetch("./sounds/ambience_loop.wav");
+    fetch("./sounds/theme_loop.wav")
+        .then((data) => data.arrayBuffer())
+        .then((arrayBuffer) => ctx.decodeAudioData(arrayBuffer))
+        .then((decodedAudio) => {
+        audio = decodedAudio;
+    });
+    function playback() {
+        const playSound = ctx.createBufferSource();
+        playSound.buffer = audio;
+        playSound.connect(ctx.destination);
+        playSound.start(ctx.currentTime);
+    }
+}
 function drawVignette() {
     //draw light
     ctx.globalCompositeOperation = "lighten";
@@ -258,16 +284,43 @@ function addFood() {
     };
     Food.push(food);
 }
+//function drawFood() {
+//
+//    ctx.fillStyle = "rgb(189, 0, 0)";
+//    ctx.strokeStyle = "rgb(255, 224, 122)";
+//    ctx.lineWidth = CellH / 2;
+//
+//    let rect: Path2D = new Path2D();
+//
+//   for (let i = 0; i < Food.length; i++) {
+//        rect.rect(Food[i].positionX, Food[i].positionY, Food[i].width, Food[i].height);
+//
+//        ctx.fill(rect);
+//        ctx.stroke(rect);
+//    }
+//}
 function drawFood() {
-    ctx.fillStyle = "rgb(189, 0, 0)";
-    ctx.strokeStyle = "rgb(255, 224, 122)";
-    ctx.lineWidth = CellH / 2;
-    let rect = new Path2D();
-    for (let i = 0; i < Food.length; i++) {
-        rect.rect(Food[i].positionX, Food[i].positionY, Food[i].width, Food[i].height);
-        ctx.fill(rect);
-        ctx.stroke(rect);
+    const rabbit1 = new Image();
+    const rabbit2 = new Image();
+    rabbit1.src = 'textures/food/rabbit1.png';
+    rabbit2.src = 'textures/food/rabbit2.png';
+    let currentImage = rabbit1;
+    let lastSwitchTime = Date.now();
+    function animateFood() {
+        const currentTime = Date.now();
+        if (currentTime - lastSwitchTime >= 500) {
+            currentImage = currentImage === rabbit1 ? rabbit2 : rabbit1;
+            lastSwitchTime = currentTime;
+        }
+        ctx.imageSmoothingEnabled = false;
+        for (let i = 0; i < Food.length; i++) {
+            ctx.drawImage(currentImage, 0, 0, currentImage.width, currentImage.height, Food[i].positionX, Food[i].positionY, Food[i].width, Food[i].height);
+        }
+        requestAnimationFrame(animateFood);
     }
+    rabbit1.onload = rabbit2.onload = () => {
+        animateFood();
+    };
 }
 function generateWalls(amount) {
     //generate n amount of walls with random orientation
@@ -419,16 +472,55 @@ function addBlindFood() {
     };
     BlindFood.push(food);
 }
+//function drawBlindFood() {
+//
+//    ctx.fillStyle = "rgb(189, 0, 0)";
+//    ctx.strokeStyle = "rgb(255, 224, 122)";
+//    ctx.lineWidth = CellH / 2;
+//
+//    let rect: Path2D = new Path2D();
+//
+//    for (let i = 0; i < BlindFood.length; i++) {
+//        rect.rect(BlindFood[i].positionX, BlindFood[i].positionY, BlindFood[i].width, BlindFood[i].height);
+//
+//        ctx.fill(rect);
+//        ctx.stroke(rect);
+//    }
+//}
 function drawBlindFood() {
-    ctx.fillStyle = "rgb(189, 0, 0)";
-    ctx.strokeStyle = "rgb(255, 224, 122)";
-    ctx.lineWidth = CellH / 2;
-    let rect = new Path2D();
-    for (let i = 0; i < BlindFood.length; i++) {
-        rect.rect(BlindFood[i].positionX, BlindFood[i].positionY, BlindFood[i].width, BlindFood[i].height);
-        ctx.fill(rect);
-        ctx.stroke(rect);
+    const flash1 = new Image();
+    const blind2 = new Image();
+    const blind3 = new Image();
+    flash1.src = 'textures/food/flash1.png';
+    blind2.src = 'textures/food/blind2.png';
+    blind3.src = 'textures/food/blind3.png';
+    const images = [flash1, blind2, blind3, blind2];
+    let currentImageIndex = 0;
+    let lastSwitchTime = Date.now();
+    function animateBlindFood() {
+        const currentTime = Date.now();
+        if (currentTime - lastSwitchTime >= 250) {
+            currentImageIndex = (currentImageIndex + 1) % images.length;
+            lastSwitchTime = currentTime;
+        }
+        const currentImage = images[currentImageIndex];
+        // Disable image smoothing
+        ctx.imageSmoothingEnabled = false;
+        for (let i = 0; i < BlindFood.length; i++) {
+            // Draw the image using all 9 arguments of drawImage
+            ctx.drawImage(currentImage, 0, 0, currentImage.width, currentImage.height, // Source rectangle
+            BlindFood[i].positionX, BlindFood[i].positionY, BlindFood[i].width, BlindFood[i].height // Destination rectangle
+            );
+        }
+        requestAnimationFrame(animateBlindFood);
     }
+    Promise.all([
+        new Promise(resolve => flash1.onload = resolve),
+        new Promise(resolve => blind2.onload = resolve),
+        new Promise(resolve => blind3.onload = resolve)
+    ]).then(() => {
+        animateBlindFood();
+    });
 }
 function loadJumpscareImages() {
     for (let i = 1; i <= 3; i++) {
@@ -489,7 +581,9 @@ let thiefCollide = false;
 generateGrid(canvas.width, canvas.height, GridX, GridY);
 generateBounds();
 generateFood();
+drawFood();
 generateBlindFood();
+drawBlindFood();
 generateSnake(2, 5, 5);
 generateWalls(25);
 generateThief();
@@ -530,8 +624,6 @@ function animate() {
         //update canvas
         ctx.putImageData(imgData, 0, 0);
         drawThief();
-        drawFood();
-        drawBlindFood();
         drawSnake();
     }
     requestAnimationFrame(animate);
