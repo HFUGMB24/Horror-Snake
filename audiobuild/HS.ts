@@ -1,35 +1,47 @@
 const canvas: HTMLCanvasElement = document.getElementsByTagName("canvas")[0];
 const ctx: CanvasRenderingContext2D = canvas.getContext("2d")!;
 
-{
-const ctx: AudioContext = new (window.AudioContext || window.AudioContext)();
-let audio: AudioBuffer;
+class SoundManager {
+    private sounds:{[key:string]:
+    HTMLAudioElement } = {};
 
-fetch("./sounds/damage.wav")
-fetch("./sounds/eat.wav")
-fetch("./sounds/gameover.wav")
-fetch("./sounds/ghost.wav")
-fetch("./sounds/light.wav")
-fetch("./sounds/reset.wav")
-fetch("./sounds/slow.wav")
-fetch("./sounds/speed.wav")
-fetch("./sounds/thunder.wav")
-fetch("./sounds/ambience_loop.wav")
-fetch("./sounds/theme_loop.wav")
-    
-    .then((data: Response) => data.arrayBuffer())
-    .then((arrayBuffer: ArrayBuffer) => ctx.decodeAudioData(arrayBuffer))
-    .then((decodedAudio: AudioBuffer) => {
-        audio = decodedAudio;
-    });
+    constructor() {
+        this.loadSounds();
+    }
 
-    function playback(): void {
-        const playSound: AudioBufferSourceNode = ctx.createBufferSource();
-        playSound.buffer = audio;
-        playSound.connect(ctx.destination);
-        playSound.start(ctx.currentTime);
+    private loadSounds() {
+        this.sounds['eat'] = new Audio('sounds/eat.wav');
+        this.sounds['death'] = new Audio('sounds/death.wav');
+        this.sounds['damage'] = new Audio('sounds/damage.wav'); 
+        this.sounds['gameover'] = new Audio('sounds/gameover.wav');
+        this.sounds['ghost'] = new Audio('sounds/ghost.wav');
+        this.sounds['light'] = new Audio('sounds/light.wav');
+        this.sounds['reset'] = new Audio('sounds/reset.wav');
+        this.sounds['slow'] = new Audio('sounds/slow.wav');
+        this.sounds['speed'] = new Audio('sounds/speed.wav');
+        this.sounds['thunder'] = new Audio('sounds/thunder.wav');
+        this.sounds['ambience_loop'] = new Audio('ambience_loop.wav');
+        this.sounds['theme_loop'] = new Audio('theme_loop.wav');
+        //HIER ALLE SOUNDS
+    }
+
+    play(sound:string){
+        if(this.sounds[sound]){
+            this.sounds[sound].play();
+        } else {
+            console.warn(`Sound "${sound}" not found.`);
+        }
+    }
+
+    setVolume(sound: string, volume: number) {
+        if (this.sounds[sound]) {
+            this.sounds[sound].volume = volume;
+        } else {
+            console.warn(`Sound "${sound}" not found.`);
+        }
     }
 }
+const soundManager = new SoundManager();
 
 interface CellData {
     class: string;
@@ -115,21 +127,21 @@ function generateGrid(width: number, height: number, rows: number, cols: number)
     }
 }
 
-//function drawGrid() {
-//    ctx.strokeStyle = 'rgb(255, 255, 255)';
-//    ctx.fillStyle = "rgb(0, 0, 0)"
-//    ctx.lineWidth = 1;
-//
-//    for (let i = 0; i < grid.length; i++) {
-//        let cell = grid[i];
-//
-//        let rect: Path2D = new Path2D()
-//        rect.rect(cell.positionX, cell.positionY, cell.width, cell.height);
-//
-//        ctx.fill(rect)
-//        ctx.stroke(rect)
-//    }
-//}
+function drawGrid() {
+   ctx.strokeStyle = 'rgb(255, 255, 255)';
+   ctx.fillStyle = "rgb(0, 0, 0)"
+   ctx.lineWidth = 1;
+
+   for (let i = 0; i < grid.length; i++) {
+       let cell = grid[i];
+
+       let rect: Path2D = new Path2D()
+       rect.rect(cell.positionX, cell.positionY, cell.width, cell.height);
+
+       ctx.fill(rect)
+       ctx.stroke(rect)
+   }
+}
 
 function drawBackground() {
     const backgroundImage = new Image();
@@ -410,41 +422,41 @@ function generateWalls(amount: number) {
     }
 }
 
-//function drawWalls() {
-//    ctx.fillStyle = "rgb(140, 99, 99)";
-//   ctx.strokeStyle = "rgb(84, 84, 84)";
-//    ctx.lineWidth = 3;
-//
-//    let rect: Path2D = new Path2D()
-//
-//   for (let i = 0; i < Walls.length; i++) {
-//
-//        rect.rect(Walls[i].positionX, Walls[i].positionY, Walls[i].width, Walls[i].height);
-//
-//        ctx.fill(rect);
-//       ctx.stroke(rect);
-//    }
-//}
-
 function drawWalls() {
-    const wallShadowImage = new Image(0);
-    const wallImage = new Image();
-    
-    wallShadowImage.src = 'textures/level/wallshadow.png';
-    wallImage.src = 'textures/level/wall.png';
+   ctx.fillStyle = "rgb(140, 99, 99)";
+  ctx.strokeStyle = "rgb(84, 84, 84)";
+   ctx.lineWidth = 3;
 
-    wallShadowImage.onload = () => {
-        for (let i = 0; i < Walls.length; i++) {
-            ctx.drawImage(wallShadowImage, Walls[i].positionX, Walls[i].positionY, Walls[i].width, Walls[i].height);
-        }
-        
-        wallImage.onload = () => {
-            for (let i = 0; i < Walls.length; i++) {
-                ctx.drawImage(wallImage, Walls[i].positionX, Walls[i].positionY, Walls[i].width, Walls[i].height);
-            }
-        };
-    };
+   let rect: Path2D = new Path2D()
+
+  for (let i = 0; i < Walls.length; i++) {
+
+       rect.rect(Walls[i].positionX, Walls[i].positionY, Walls[i].width, Walls[i].height);
+
+       ctx.fill(rect);
+      ctx.stroke(rect);
+   }
 }
+
+// function drawWalls() {
+//     const wallShadowImage = new Image(0);
+//     const wallImage = new Image();
+    
+//     wallShadowImage.src = 'textures/level/wallshadow.png';
+//     wallImage.src = 'textures/level/wall.png';
+
+//     wallShadowImage.onload = () => {
+//         for (let i = 0; i < Walls.length; i++) {
+//             ctx.drawImage(wallShadowImage, Walls[i].positionX, Walls[i].positionY, Walls[i].width, Walls[i].height);
+//         }
+        
+//         wallImage.onload = () => {
+//             for (let i = 0; i < Walls.length; i++) {
+//                 ctx.drawImage(wallImage, Walls[i].positionX, Walls[i].positionY, Walls[i].width, Walls[i].height);
+//             }
+//         };
+//     };
+// }
 
 function generateThief() {
     //generate a enemy snake with random length
@@ -591,6 +603,7 @@ function loadJumpscareImages() {
 function jumpscare() {
     let randomIndex = Math.floor(Math.random() * images.length);
     ctx.drawImage(images[randomIndex], 0, 0, canvas.width, canvas.height);
+   
 }
 
 function checkObstacleCollision(): boolean {
@@ -675,7 +688,8 @@ function animate() {
 
         //handle collisions
         if (thiefCollide || selfCollide || obstacleCollide || snake[0].positionX < CellW || snake[0].positionX >= CellW * (GridX - 1) || snake[0].positionY < CellH || snake[0].positionY >= CellH * (GridY - 1)) {
-
+            soundManager.play('gameover')
+            soundManager.setVolume('gameover', 0.5);
         } else {
             delay = 0;
 
@@ -685,13 +699,17 @@ function animate() {
                 addFood();
                 feedSnake();
                 viewDistance = 300;
+                soundManager.play('eat')
+                soundManager.setVolume('eat', 0.5);
             }
 
             if (snake[0].x === BlindFood[0].x && snake[0].y === BlindFood[0].y) {
                 BlindFood.pop();
                 addBlindFood();
                 feedSnake();
-                jumpscare();
+                //jumpscare();
+                soundManager.play('thunder')
+                soundManager.setVolume('thunder', 1);
                 viewDistance = 300;
             }
         }
@@ -702,13 +720,14 @@ function animate() {
         drawFood();
         drawBlindFood();
         drawSnake();
+        drawVignette
     }
 
     requestAnimationFrame(animate);
 }
 
-//drawGrid();
-drawBackground();
+drawGrid();
+//drawBackground();
 drawBounds();
 drawWalls();
 let imgData: ImageData = ctx.getImageData(0, 0, canvas.width, canvas.height);

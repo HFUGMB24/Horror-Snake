@@ -1,31 +1,44 @@
 var canvas = document.getElementsByTagName("canvas")[0];
 var ctx = canvas.getContext("2d");
-{
-    var ctx_1 = new (window.AudioContext || window.AudioContext)();
-    var audio_1;
-    fetch("./sounds/damage.wav");
-    fetch("./sounds/eat.wav");
-    fetch("./sounds/gameover.wav");
-    fetch("./sounds/ghost.wav");
-    fetch("./sounds/light.wav");
-    fetch("./sounds/reset.wav");
-    fetch("./sounds/slow.wav");
-    fetch("./sounds/speed.wav");
-    fetch("./sounds/thunder.wav");
-    fetch("./sounds/ambience_loop.wav");
-    fetch("./sounds/theme_loop.wav")
-        .then(function (data) { return data.arrayBuffer(); })
-        .then(function (arrayBuffer) { return ctx_1.decodeAudioData(arrayBuffer); })
-        .then(function (decodedAudio) {
-        audio_1 = decodedAudio;
-    });
-    function playback() {
-        var playSound = ctx_1.createBufferSource();
-        playSound.buffer = audio_1;
-        playSound.connect(ctx_1.destination);
-        playSound.start(ctx_1.currentTime);
+var SoundManager = /** @class */ (function () {
+    function SoundManager() {
+        this.sounds = {};
+        this.loadSounds();
     }
-}
+    SoundManager.prototype.loadSounds = function () {
+        this.sounds['eat'] = new Audio('sounds/eat.wav');
+        this.sounds['death'] = new Audio('sounds/death.wav');
+        this.sounds['damage'] = new Audio('sounds/damage.wav');
+        this.sounds['gameover'] = new Audio('sounds/gameover.wav');
+        this.sounds['ghost'] = new Audio('sounds/ghost.wav');
+        this.sounds['light'] = new Audio('sounds/light.wav');
+        this.sounds['reset'] = new Audio('sounds/reset.wav');
+        this.sounds['slow'] = new Audio('sounds/slow.wav');
+        this.sounds['speed'] = new Audio('sounds/speed.wav');
+        this.sounds['thunder'] = new Audio('sounds/thunder.wav');
+        this.sounds['ambience_loop'] = new Audio('ambience_loop.wav');
+        this.sounds['theme_loop'] = new Audio('theme_loop.wav');
+        //HIER ALLE SOUNDS
+    };
+    SoundManager.prototype.play = function (sound) {
+        if (this.sounds[sound]) {
+            this.sounds[sound].play();
+        }
+        else {
+            console.warn("Sound \"".concat(sound, "\" not found."));
+        }
+    };
+    SoundManager.prototype.setVolume = function (sound, volume) {
+        if (this.sounds[sound]) {
+            this.sounds[sound].volume = volume;
+        }
+        else {
+            console.warn("Sound \"".concat(sound, "\" not found."));
+        }
+    };
+    return SoundManager;
+}());
+var soundManager = new SoundManager();
 function drawVignette() {
     //draw light
     ctx.globalCompositeOperation = "lighten";
@@ -63,21 +76,18 @@ function generateGrid(width, height, rows, cols) {
         }
     }
 }
-//function drawGrid() {
-//    ctx.strokeStyle = 'rgb(255, 255, 255)';
-//    ctx.fillStyle = "rgb(0, 0, 0)"
-//    ctx.lineWidth = 1;
-//
-//    for (let i = 0; i < grid.length; i++) {
-//        let cell = grid[i];
-//
-//        let rect: Path2D = new Path2D()
-//        rect.rect(cell.positionX, cell.positionY, cell.width, cell.height);
-//
-//        ctx.fill(rect)
-//        ctx.stroke(rect)
-//    }
-//}
+function drawGrid() {
+    ctx.strokeStyle = 'rgb(255, 255, 255)';
+    ctx.fillStyle = "rgb(0, 0, 0)";
+    ctx.lineWidth = 1;
+    for (var i = 0; i < grid.length; i++) {
+        var cell = grid[i];
+        var rect = new Path2D();
+        rect.rect(cell.positionX, cell.positionY, cell.width, cell.height);
+        ctx.fill(rect);
+        ctx.stroke(rect);
+    }
+}
 function drawBackground() {
     var backgroundImage = new Image();
     backgroundImage.src = 'textures/level/background.png';
@@ -314,37 +324,33 @@ function generateWalls(amount) {
         }
     }
 }
-//function drawWalls() {
-//    ctx.fillStyle = "rgb(140, 99, 99)";
-//   ctx.strokeStyle = "rgb(84, 84, 84)";
-//    ctx.lineWidth = 3;
-//
-//    let rect: Path2D = new Path2D()
-//
-//   for (let i = 0; i < Walls.length; i++) {
-//
-//        rect.rect(Walls[i].positionX, Walls[i].positionY, Walls[i].width, Walls[i].height);
-//
-//        ctx.fill(rect);
-//       ctx.stroke(rect);
-//    }
-//}
 function drawWalls() {
-    var wallShadowImage = new Image(0);
-    var wallImage = new Image();
-    wallShadowImage.src = 'textures/level/wallshadow.png';
-    wallImage.src = 'textures/level/wall.png';
-    wallShadowImage.onload = function () {
-        for (var i = 0; i < Walls.length; i++) {
-            ctx.drawImage(wallShadowImage, Walls[i].positionX, Walls[i].positionY, Walls[i].width, Walls[i].height);
-        }
-        wallImage.onload = function () {
-            for (var i = 0; i < Walls.length; i++) {
-                ctx.drawImage(wallImage, Walls[i].positionX, Walls[i].positionY, Walls[i].width, Walls[i].height);
-            }
-        };
-    };
+    ctx.fillStyle = "rgb(140, 99, 99)";
+    ctx.strokeStyle = "rgb(84, 84, 84)";
+    ctx.lineWidth = 3;
+    var rect = new Path2D();
+    for (var i = 0; i < Walls.length; i++) {
+        rect.rect(Walls[i].positionX, Walls[i].positionY, Walls[i].width, Walls[i].height);
+        ctx.fill(rect);
+        ctx.stroke(rect);
+    }
 }
+// function drawWalls() {
+//     const wallShadowImage = new Image(0);
+//     const wallImage = new Image();
+//     wallShadowImage.src = 'textures/level/wallshadow.png';
+//     wallImage.src = 'textures/level/wall.png';
+//     wallShadowImage.onload = () => {
+//         for (let i = 0; i < Walls.length; i++) {
+//             ctx.drawImage(wallShadowImage, Walls[i].positionX, Walls[i].positionY, Walls[i].width, Walls[i].height);
+//         }
+//         wallImage.onload = () => {
+//             for (let i = 0; i < Walls.length; i++) {
+//                 ctx.drawImage(wallImage, Walls[i].positionX, Walls[i].positionY, Walls[i].width, Walls[i].height);
+//             }
+//         };
+//     };
+// }
 function generateThief() {
     //generate a enemy snake with random length
     var randIndex = Math.floor(Math.random() * grid.length);
@@ -534,6 +540,8 @@ function animate() {
         thiefCollide = checkThiefCollision();
         //handle collisions
         if (thiefCollide || selfCollide || obstacleCollide || snake[0].positionX < CellW || snake[0].positionX >= CellW * (GridX - 1) || snake[0].positionY < CellH || snake[0].positionY >= CellH * (GridY - 1)) {
+            soundManager.play('gameover');
+            soundManager.setVolume('gameover', 0.5);
         }
         else {
             delay = 0;
@@ -543,12 +551,16 @@ function animate() {
                 addFood();
                 feedSnake();
                 viewDistance = 300;
+                soundManager.play('eat');
+                soundManager.setVolume('eat', 0.5);
             }
             if (snake[0].x === BlindFood[0].x && snake[0].y === BlindFood[0].y) {
                 BlindFood.pop();
                 addBlindFood();
                 feedSnake();
-                jumpscare();
+                //jumpscare();
+                soundManager.play('thunder');
+                soundManager.setVolume('thunder', 1);
                 viewDistance = 300;
             }
         }
@@ -558,11 +570,12 @@ function animate() {
         drawFood();
         drawBlindFood();
         drawSnake();
+        drawVignette();
     }
     requestAnimationFrame(animate);
 }
-//drawGrid();
-drawBackground();
+drawGrid();
+//drawBackground();
 drawBounds();
 drawWalls();
 var imgData = ctx.getImageData(0, 0, canvas.width, canvas.height);
