@@ -1,6 +1,18 @@
 "use strict";
+const backgroundImage = new Image();
+backgroundImage.src = 'textures/level/background.png';
 const canvas = document.getElementsByTagName("canvas")[0];
 const ctx = canvas.getContext("2d");
+function drawBackground() {
+    if (backgroundImage.complete) {
+        ctx.drawImage(backgroundImage, 0, 0, canvas.width, canvas.height);
+    }
+    else {
+        backgroundImage.onload = () => {
+            ctx.drawImage(backgroundImage, 0, 0, canvas.width, canvas.height);
+        };
+    }
+}
 function drawVignette() {
     //draw light
     ctx.globalCompositeOperation = "lighten";
@@ -468,10 +480,9 @@ function animate() {
         if (viewDistance > 100) {
             viewDistance -= 2;
         }
-        //selfCollide = checkSelfCollision();
         obstacleCollide = checkObstacleCollision();
-        //check for wall collision -----------------------------------
         if (obstacleCollide || snake[0].positionX < CellW || snake[0].positionX >= CellW * (GridX - 1) || snake[0].positionY < CellH || snake[0].positionY >= CellH * (GridY - 1)) {
+            // Game over logic here
         }
         else {
             delay = 0;
@@ -491,23 +502,17 @@ function animate() {
                 jumpscare();
                 viewDistance = 300;
             }
-            ctx.putImageData(imgData, 0, 0);
-            // drawGrid();
-            // drawBounds();
+            // Draw background
+            drawBackground();
+            // Draw other game elements
             drawThief();
             drawFood();
             drawBlindFood();
             drawSnake();
-            //drawVignette();
         }
     }
     requestAnimationFrame(animate);
 }
-drawGrid();
-drawBounds();
-drawWalls();
-let imgData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-requestAnimationFrame(animate);
 console.log(grid);
 console.log(Bounds);
 console.log(Walls);
