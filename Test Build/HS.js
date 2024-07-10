@@ -541,6 +541,7 @@ let thiefCollide = false;
 generateGrid(canvas.width, canvas.height, GridX, GridY);
 generateBounds();
 generateFood();
+drawFood();
 generateBlindFood();
 generateSnake(2, 5, 5);
 generateWalls(25);
@@ -582,7 +583,6 @@ function animate() {
         //update canvas
         ctx.putImageData(imgData, 0, 0);
         drawThief();
-        drawFood();
         drawBlindFood();
         drawSnake();
     }
