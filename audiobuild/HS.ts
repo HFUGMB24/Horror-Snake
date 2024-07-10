@@ -1,6 +1,36 @@
 const canvas: HTMLCanvasElement = document.getElementsByTagName("canvas")[0];
 const ctx: CanvasRenderingContext2D = canvas.getContext("2d")!;
 
+{
+const ctx: AudioContext = new (window.AudioContext || window.AudioContext)();
+let audio: AudioBuffer;
+
+fetch("./sounds/damage.wav")
+fetch("./sounds/eat.wav")
+fetch("./sounds/gameover.wav")
+fetch("./sounds/ghost.wav")
+fetch("./sounds/light.wav")
+fetch("./sounds/reset.wav")
+fetch("./sounds/slow.wav")
+fetch("./sounds/speed.wav")
+fetch("./sounds/thunder.wav")
+fetch("./sounds/ambience_loop.wav")
+fetch("./sounds/theme_loop.wav")
+    
+    .then((data: Response) => data.arrayBuffer())
+    .then((arrayBuffer: ArrayBuffer) => ctx.decodeAudioData(arrayBuffer))
+    .then((decodedAudio: AudioBuffer) => {
+        audio = decodedAudio;
+    });
+
+    function playback(): void {
+        const playSound: AudioBufferSourceNode = ctx.createBufferSource();
+        playSound.buffer = audio;
+        playSound.connect(ctx.destination);
+        playSound.start(ctx.currentTime);
+    }
+}
+
 interface CellData {
     class: string;
     positionX: number;
