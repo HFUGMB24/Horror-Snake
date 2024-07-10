@@ -128,21 +128,21 @@ function generateGrid(width: number, height: number, rows: number, cols: number)
     }
 }
 
-//function drawGrid() {
-//    ctx.strokeStyle = 'rgb(255, 255, 255)';
-//    ctx.fillStyle = "rgb(0, 0, 0)"
-//    ctx.lineWidth = 1;
-//
-//    for (let i = 0; i < grid.length; i++) {
-//        let cell = grid[i];
-//
-//        let rect: Path2D = new Path2D()
-//        rect.rect(cell.positionX, cell.positionY, cell.width, cell.height);
-//
-//        ctx.fill(rect)
-//        ctx.stroke(rect)
-//    }
-//}
+function drawGrid() {
+   ctx.strokeStyle = 'rgb(255, 255, 255)';
+   ctx.fillStyle = "rgb(0, 0, 0)"
+   ctx.lineWidth = 1;
+
+   for (let i = 0; i < grid.length; i++) {
+       let cell = grid[i];
+
+       let rect: Path2D = new Path2D()
+       rect.rect(cell.positionX, cell.positionY, cell.width, cell.height);
+
+       ctx.fill(rect)
+       ctx.stroke(rect)
+   }
+}
 
 function drawBackground() {
     const backgroundImage = new Image();
@@ -457,41 +457,41 @@ function generateWalls(amount: number) {
     }
 }
 
-//function drawWalls() {
-//    ctx.fillStyle = "rgb(140, 99, 99)";
-//   ctx.strokeStyle = "rgb(84, 84, 84)";
-//    ctx.lineWidth = 3;
-//
-//    let rect: Path2D = new Path2D()
-//
-//   for (let i = 0; i < Walls.length; i++) {
-//
-//        rect.rect(Walls[i].positionX, Walls[i].positionY, Walls[i].width, Walls[i].height);
-//
-//        ctx.fill(rect);
-//       ctx.stroke(rect);
-//    }
-//}
-
 function drawWalls() {
-    const wallShadowImage = new Image(0);
-    const wallImage = new Image();
-    
-    wallShadowImage.src = 'textures/level/wallshadow.png';
-    wallImage.src = 'textures/level/wall.png';
+   ctx.fillStyle = "rgb(140, 99, 99)";
+  ctx.strokeStyle = "rgb(84, 84, 84)";
+   ctx.lineWidth = 3;
 
-    wallShadowImage.onload = () => {
-        for (let i = 0; i < Walls.length; i++) {
-            ctx.drawImage(wallShadowImage, Walls[i].positionX, Walls[i].positionY, Walls[i].width, Walls[i].height);
-        }
-        
-        wallImage.onload = () => {
-            for (let i = 0; i < Walls.length; i++) {
-                ctx.drawImage(wallImage, Walls[i].positionX, Walls[i].positionY, Walls[i].width, Walls[i].height);
-            }
-        };
-    };
+   let rect: Path2D = new Path2D()
+
+  for (let i = 0; i < Walls.length; i++) {
+
+       rect.rect(Walls[i].positionX, Walls[i].positionY, Walls[i].width, Walls[i].height);
+
+       ctx.fill(rect);
+      ctx.stroke(rect);
+   }
 }
+
+// function drawWalls() {
+//     const wallShadowImage = new Image(0);
+//     const wallImage = new Image();
+    
+//     wallShadowImage.src = 'textures/level/wallshadow.png';
+//     wallImage.src = 'textures/level/wall.png';
+
+//     wallShadowImage.onload = () => {
+//         for (let i = 0; i < Walls.length; i++) {
+//             ctx.drawImage(wallShadowImage, Walls[i].positionX, Walls[i].positionY, Walls[i].width, Walls[i].height);
+//         }
+        
+//         wallImage.onload = () => {
+//             for (let i = 0; i < Walls.length; i++) {
+//                 ctx.drawImage(wallImage, Walls[i].positionX, Walls[i].positionY, Walls[i].width, Walls[i].height);
+//             }
+//         };
+//     };
+// }
 
 function generateThief() {
     //generate a enemy snake with random length
@@ -806,8 +806,8 @@ function animate() {
     requestAnimationFrame(animate);
 }
 
-//drawGrid();
-drawBackground();
+drawGrid();
+//drawBackground();
 drawBounds();
 drawWalls();
 let imgData: ImageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
