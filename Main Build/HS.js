@@ -95,6 +95,7 @@ function drawBackground() {
         ctx.drawImage(backgroundImage, 0, 0, canvas.width, canvas.height);
     };
 }
+//check for keyinputs
 window.addEventListener("keypress", function (_event) {
     switch (_event.key) {
         case "w":
@@ -381,7 +382,7 @@ function drawWalls() {
 function generateThief() {
     //generate a enemy snake with random length
     var randIndex = Math.floor(Math.random() * grid.length);
-    var length = Math.floor(Math.random() * 7 + 1);
+    var length = Math.floor(Math.random() * 5 + 1);
     var direction = [Math.round(-1 + Math.random() * 2), Math.round(-1 + Math.random() * 2)];
     for (var i = 0; i < length; i++) {
         var cell = {
@@ -426,7 +427,7 @@ function drawThief() {
         var cell = Thief[i];
         var posX = 0;
         var posY = 0;
-        ctx.fillStyle = "rgb(252, 131, 131)";
+        ctx.fillStyle = "rgb(237, 140, 140)";
         ctx.strokeStyle = "rgb(0, 0, 0)";
         ctx.lineWidth = 1;
         var rect = new Path2D();
@@ -497,8 +498,8 @@ function drawBlindFood() {
     var blind2 = new Image();
     var blind3 = new Image();
     flash1.src = 'textures/food/flash1.png';
-    blind2.src = 'textures/food/blind2.png';
-    blind3.src = 'textures/food/blind3.png';
+    blind2.src = 'textures/food/flash2.png';
+    blind3.src = 'textures/food/flash3.png';
     var images = [flash1, blind2, blind3, blind2];
     var currentImageIndex = 0;
     var lastSwitchTime = Date.now();

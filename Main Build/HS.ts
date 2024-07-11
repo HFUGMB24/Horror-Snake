@@ -144,20 +144,19 @@ function drawGrid() {
    }
 }
 
-function drawBackground() {
-    const backgroundImage = new Image();
-    backgroundImage.src = 'textures/level/background.png';
-    backgroundImage.onload = () => {
-        ctx.drawImage(backgroundImage, 0, 0, canvas.width, canvas.height);
-    };
-}
+// function drawBackground() {
+//     const backgroundImage = new Image();
+//     backgroundImage.src = 'textures/level/background.png';
+//     backgroundImage.onload = () => {
+//         ctx.drawImage(backgroundImage, 0, 0, canvas.width, canvas.height);
+//     };
+// }
 
+//check for keyinputs
 window.addEventListener("keypress", _event => {
     switch (_event.key) {
         case "w":
-            if (snake[0].direction == "down") {
-
-            } else {
+            if (snake[0].direction != "down") {
                 snake[0].direction = "up";
             }
             break;
@@ -549,7 +548,7 @@ function drawThief() {
         let posX = 0;
         let posY = 0;
 
-        ctx.fillStyle = "rgb(81, 50, 31)";
+        ctx.fillStyle = "rgb(237, 140, 140)";
         ctx.strokeStyle = "rgb(0, 0, 0)";
         ctx.lineWidth = 1;
 
@@ -633,8 +632,8 @@ function drawBlindFood() {
     const blind2 = new Image();
     const blind3 = new Image();
     flash1.src = 'textures/food/flash1.png';
-    blind2.src = 'textures/food/blind2.png';
-    blind3.src = 'textures/food/blind3.png';
+    blind2.src = 'textures/food/flash2.png';
+    blind3.src = 'textures/food/flash3.png';
 
     const images = [flash1, blind2, blind3, blind2];
     let currentImageIndex = 0;
@@ -755,7 +754,7 @@ let delay: number = 0;
 
 function animate() {
     delay++
-    if (delay == 20) {
+    if (delay == 25) {
         if (viewDistance > 100) {
             viewDistance -= 2;
         }
@@ -789,7 +788,7 @@ function animate() {
                 BlindFood.pop();
                 addBlindFood();
                 feedSnake();
-                jumpscare();
+                //jumpscare();
                 viewDistance = 300;
                 soundManager.play('thunder')
                 soundManager.setVolume('thunder', 1);
