@@ -381,7 +381,7 @@ function drawWalls() {
 function generateThief() {
     //generate a enemy snake with random length
     var randIndex = Math.floor(Math.random() * grid.length);
-    var length = Math.floor(Math.random() * 5 + 1);
+    var length = Math.floor(Math.random() * 7 + 1);
     var direction = [Math.round(-1 + Math.random() * 2), Math.round(-1 + Math.random() * 2)];
     for (var i = 0; i < length; i++) {
         var cell = {
@@ -426,7 +426,7 @@ function drawThief() {
         var cell = Thief[i];
         var posX = 0;
         var posY = 0;
-        ctx.fillStyle = "rgb(81, 50, 31)";
+        ctx.fillStyle = "rgb(252, 131, 131)";
         ctx.strokeStyle = "rgb(0, 0, 0)";
         ctx.lineWidth = 1;
         var rect = new Path2D();
