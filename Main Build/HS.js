@@ -596,7 +596,7 @@ loadJumpscareImages();
 var delay = 0;
 function animate() {
     delay++;
-    if (delay == 20) {
+    if (delay == 25) {
         if (viewDistance > 100) {
             viewDistance -= 2;
         }
@@ -626,7 +626,7 @@ function animate() {
                 BlindFood.pop();
                 addBlindFood();
                 feedSnake();
-                jumpscare();
+                //jumpscare();
                 viewDistance = 300;
                 soundManager.play('thunder');
                 soundManager.setVolume('thunder', 1);
